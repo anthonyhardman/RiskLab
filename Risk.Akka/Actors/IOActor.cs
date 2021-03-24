@@ -9,9 +9,10 @@ namespace Risk.Akka.Actors
 {
     public class IOActor : ReceiveActor
     {
-        IDictionary<IActorRef, string> players;
+        Dictionary<IActorRef, string> players;
         public IOActor()
         {
+            players = new Dictionary<IActorRef, string>();
             Receive<SignupMessage>(msg =>
             {
                 var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(msg.RequestedName)), ActorConstants.PlayerActorName);

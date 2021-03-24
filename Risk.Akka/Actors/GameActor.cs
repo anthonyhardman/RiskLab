@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Risk.Akka.Messages;
+using Risk.Shared;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,7 @@ namespace Risk.Akka.Actors
         public string SecretCode { get; set; }
         public GameActor()
         {
+            SecretCode = ActorConstants.GamePassword;
             Become(Starting);
         }
 
@@ -28,12 +30,15 @@ namespace Risk.Akka.Actors
                 if(SecretCode == msg.Password)
                 {
                     Become(Running);
+                    Sender.Tell(new GameStartingMessage());
                 }
                 else
                 {
                     Sender.Tell(new CannotStartGameMessage());
                 }
             });
+
+            
         }
 
         public void Running()

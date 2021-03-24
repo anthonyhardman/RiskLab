@@ -9,5 +9,6 @@ namespace Risk.Shared
         public const string PlayerActorName = "PlayerActor";
         public const string GameActorName = "GameActor";
         public const string GamePath = "akka://risk_coding_challenge/GameActor";
+        public const string GamePassword = "thisisasafepassword";
     }
 }
