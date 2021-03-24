@@ -1,5 +1,4 @@
-﻿using Risk.Game;
-using Risk.Shared;
+﻿using Risk.Shared;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

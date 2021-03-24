@@ -1,15 +1,34 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Startup.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="risk.akka.hocon" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Startup.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Akka" Version="1.4.17" />
+    <PackageReference Include="Akka.Configuration" Version="1.0.5835.36887" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Risk.Shared\Risk.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="risk.akka.hocon" />
   </ItemGroup>
 
 </Project>

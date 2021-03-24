@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Risk.Akka.Messages
 {
-    public class CannotStartGameMessage
+    public record CannotStartGameMessage
     {
     }
 }

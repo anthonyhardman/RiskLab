@@ -11,7 +11,7 @@ using Akka.Actor;
 
 namespace Risk.Server.Hubs
 {
-    public class RiskHub : Hub<IRiskHub>
+    public class RiskHub : Hub<IRiskHub>, IRiskIOBridge
     {
         private readonly ILogger<RiskHub> logger;
         private readonly IConfiguration config;
@@ -280,5 +280,9 @@ namespace Risk.Server.Hubs
             await Clients.All.SendStatus(game.GetGameStatus());
         }
 
+        public void JoinFailed(string connectionId)
+        {
+            Clients.Client(connectionId).SendMessage("Server", "Unable to join game.");
+        }
     }
 }

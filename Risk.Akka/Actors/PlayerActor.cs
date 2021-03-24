@@ -20,16 +20,22 @@ namespace Risk.Akka.Actors
         {
             Receive<JoinGameResponse>(msg =>
             {
-                AssignedName = msg.GivenName;
+                AssignedName = msg.AssignedName;
+                Become(Joined);
             });
 
             Receive<NoGameResponse>(msg =>
             {
-                Become(Sleeping);
+                Context.Parent.Tell(new UnableToJoinMessage());
             });
         }
 
         public void Sleeping()
+        {
+
+        }
+
+        public void Joined()
         {
 
         }

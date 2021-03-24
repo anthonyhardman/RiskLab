@@ -38,12 +38,14 @@ namespace Risk.Server
             });
 
             services.AddSingleton<GameRunner>();
-            services.AddSingleton<RiskHub>();
+            var riskhub = new RiskHub();
+            services.AddSingleton<RiskHub>(riskhub);
 
             services.AddSingleton(GameInitializer.InitializeGame(
                 int.Parse(Configuration["height"] ?? "5"),
                 int.Parse(Configuration["width"] ?? "5"),
-                int.Parse(Configuration["startingArmies"] ?? "5")));
+                int.Parse(Configuration["startingArmies"] ?? "5"),
+                ));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

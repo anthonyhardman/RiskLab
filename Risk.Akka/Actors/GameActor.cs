@@ -10,9 +10,9 @@ namespace Risk.Akka.Actors
     public class GameActor : ReceiveActor
     {
         public string SecretCode { get; set; }
-        public GameActor()
+        public GameActor(string secretCode )
         {
-            SecretCode = ActorConstants.GamePassword;
+            SecretCode = secretCode;
             Become(Starting);
         }
 
@@ -22,12 +22,12 @@ namespace Risk.Akka.Actors
             {
                 //update logic to finalize name later
                 var finalizedName = msg.RequestedName;
-                Sender.Tell(new JoinGameResponse { GivenName = finalizedName });
+                Sender.Tell(new JoinGameResponse { AssignedName = finalizedName });
             });
 
             Receive<StartGameMessage>(msg =>
             {
-                if(SecretCode == msg.Password)
+                if(SecretCode == msg.SecretCode)
                 {
                     Become(Running);
                     Sender.Tell(new GameStartingMessage());
@@ -43,7 +43,10 @@ namespace Risk.Akka.Actors
 
         public void Running()
         {
-
+            Receive<JoinGameMessage>(_ =>
+            {
+                Sender.Tell(new UnableToJoinMessage());
+            });
         }
     }
 }

@@ -6,6 +6,6 @@ namespace Risk.Akka.Messages
 {
     public class JoinGameResponse
     {
-        public string GivenName { get; set; }
+        public string AssignedName { get; set; }
     }
 }

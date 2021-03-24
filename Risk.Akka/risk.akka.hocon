@@ -1,0 +1,3 @@
+﻿akka {
+	loggers = [""Akka.Logger.Serilog.SerilogLogger, Akka.Logger.Serilog""]
+}
