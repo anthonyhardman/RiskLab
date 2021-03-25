@@ -7,7 +7,6 @@ using Akka.TestKit.NUnit3;
 using Moq;
 using NUnit.Framework;
 using Risk.Akka.Actors;
-using Risk.Akka.Messages;
 using Risk.Shared;
 
 namespace Risk.Akka.Test
@@ -25,21 +24,22 @@ namespace Risk.Akka.Test
         [Test]
         public void TestPlayerJoiningIOActor()
         {
-            var signupMessage = new SignupMessage() { ConnectionString = "12345", RequestedName = "Test" };
+            var signupMessage = new SignupMessage("Test", "12345");
             var IOActor = ActorOfAsTestActorRef(() => new IOActor(riskIOBridgeMock.Object), TestActor);
+
             IOActor.Tell(signupMessage);
-            var confirmMessage = ExpectMsg<ConfirmPlayerSignup>();
-            Assert.NotNull(confirmMessage);
+            
+            Assert.NotNull(ExpectMsg<ConfirmPlayerSignup>());
         }
 
         [Test]
         public void TestPlayerUnableToJoinGame()
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
-            gameActor.Tell(new StartGameMessage() { SecretCode = "SecretCode" });
+            gameActor.Tell(new StartGameMessage("SecretCode"));
             ExpectMsg<GameStartingMessage>();
 
-            gameActor.Tell(new JoinGameMessage() { RequestedName = "Test" });
+            gameActor.Tell(new JoinGameMessage("Test"));
             
             Assert.NotNull(ExpectMsg<UnableToJoinMessage>());
         }
@@ -49,7 +49,7 @@ namespace Risk.Akka.Test
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
 
-            gameActor.Tell(new JoinGameMessage() { RequestedName = "Test" });
+            gameActor.Tell(new JoinGameMessage("Test"));
             
             Assert.NotNull(ExpectMsg<JoinGameResponse>());
         }
@@ -58,18 +58,18 @@ namespace Risk.Akka.Test
         public void BadPasswordAuthentication()
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
-            gameActor.Tell(new StartGameMessage() { SecretCode = "NotCorrect" });
-            var badPasswordMessage = ExpectMsg<CannotStartGameMessage>();
-            Assert.NotNull(badPasswordMessage);
+            gameActor.Tell(new StartGameMessage("NotCorrect"));
+
+            Assert.NotNull(ExpectMsg<CannotStartGameMessage>());
         }
 
         [Test]
         public void SuccessfulPasswordAuthentication()
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
-            gameActor.Tell(new StartGameMessage() { SecretCode = "SecretCode" });
-            var expectedMessage = ExpectMsg<GameStartingMessage>();
-            Assert.NotNull(expectedMessage);
+            gameActor.Tell(new StartGameMessage("SecretCode"));
+
+            Assert.NotNull(ExpectMsg<GameStartingMessage>());
         }
     }
 }
