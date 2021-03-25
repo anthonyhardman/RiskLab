@@ -1,5 +1,4 @@
 ﻿using Akka.Actor;
-using Risk.Akka.Messages;
 using Risk.Shared;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace Risk.Akka.Actors
         public string AssignedName { get; set; }
         public PlayerActor(string requestedName)
         {
-            Context.ActorSelection(ActorConstants.GamePath).Tell(new JoinGameMessage { RequestedName = requestedName });
+            Context.ActorSelection(ActorConstants.GamePath).Tell(new JoinGameMessage(requestedName));
             Become(Joining);
         }
 

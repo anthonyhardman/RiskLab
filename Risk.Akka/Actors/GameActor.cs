@@ -1,5 +1,4 @@
 ﻿using Akka.Actor;
-using Risk.Akka.Messages;
 using Risk.Shared;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace Risk.Akka.Actors
             {
                 //update logic to finalize name later
                 var finalizedName = msg.RequestedName;
-                Sender.Tell(new JoinGameResponse { AssignedName = finalizedName });
+                Sender.Tell(new JoinGameResponse(finalizedName));
             });
 
             Receive<StartGameMessage>(msg =>

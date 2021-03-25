@@ -1,5 +1,4 @@
 ﻿using Akka.Actor;
-using Risk.Akka.Messages;
 using Risk.Shared;
 using System;
 using System.Collections.Generic;
@@ -23,7 +22,7 @@ namespace Risk.Akka.Actors
             Receive<SignupMessage>(msg =>
             {
                 var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(msg.RequestedName)), ActorConstants.PlayerActorName);
-                players.Add(newPlayer, msg.ConnectionString);
+                players.Add(newPlayer, msg.ConnectionId);
                 Sender.Tell(new ConfirmPlayerSignup());
             });
 
