@@ -8,24 +8,20 @@ using System.Threading.Tasks;
 using System.IO;
 using Risk.Akka.Actors;
 using Risk.Shared;
+using System.Net;
 
 namespace Risk.Akka
 {
     public static class Startup
     {
-        public static ActorSystem Init(string secretCode)
+        public static ActorSystem Init(string secretCode, IRiskIOBridge riskIOBridge)
         {
             var hocon = File.ReadAllText("risk.akka.hocon");
-            var config = ConfigurationFactory.ParseString(hocon
-                .Replace("{{HostPort}}", Constants.AdditionActorPort)
-                .Replace("{{HostIp}}", Dns.GetHostName())
-                .Replace("{{SystemName}}", Constants.ActorSystemName)
-                .Replace("{{SeedIp}}", Dns.GetHostName())
-                .Replace("{{SeedPort}}", Constants.SeedPort)
-                );
+            var config = ConfigurationFactory.ParseString(hocon);
             var actorSystem = ActorSystem.Create("Risk", config);
-            actorSystem.ActorOf<IOActor>(ActorConstants.IOActor);
-            actorSystem.ActorOf(() => GameActor(secretCode), ActorConstants.GameActor);
+            actorSystem.ActorOf(Props.Create(() => new IOActor(riskIOBridge)), ActorConstants.IOActorName);
+            actorSystem.ActorOf(Props.Create(() => new GameActor(secretCode)), ActorConstants.GameActorName);
+            return actorSystem;
         }
     }
 }

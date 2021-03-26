@@ -37,14 +37,13 @@ namespace Risk.Server
                     });
             });
 
-            services.AddSingleton<GameRunner>();
-            var riskhub = new RiskHub();
-            services.AddSingleton<RiskHub>(riskhub);
-
-            services.AddSingleton(GameInitializer.InitializeGame(
+            services.AddSingleton<RiskHub>();
+            services.AddSingleton(services => GameInitializer.InitializeGame(
                 int.Parse(Configuration["height"] ?? "5"),
                 int.Parse(Configuration["width"] ?? "5"),
                 int.Parse(Configuration["startingArmies"] ?? "5"),
+                services.GetService<RiskHub>(),
+                Configuration["StartGameCode"]
                 ));
         }
 
