@@ -39,7 +39,7 @@ namespace Risk.Akka.Test
             gameActor.Tell(new StartGameMessage("SecretCode"));
             ExpectMsg<GameStartingMessage>();
 
-            gameActor.Tell(new JoinGameMessage("Test"));
+            gameActor.Tell(new JoinGameMessage("Test", "12345"));
             
             Assert.NotNull(ExpectMsg<UnableToJoinMessage>());
         }
@@ -49,7 +49,7 @@ namespace Risk.Akka.Test
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
 
-            gameActor.Tell(new JoinGameMessage("Test"));
+            gameActor.Tell(new JoinGameMessage("Test", "12345"));
             
             Assert.NotNull(ExpectMsg<JoinGameResponse>());
         }
@@ -87,13 +87,14 @@ namespace Risk.Akka.Test
         [Test]
         public void UniquePlayerName()
         {
-            var IOActor = ActorOfAsTestActorRef(() => new IOActor(riskIOBridgeMock.Object), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
 
-            IOActor.Tell(new SignupMessage("Test", "12345"));
-            ExpectMsg<ConfirmPlayerSignup>();
+            gameActor.Tell(new JoinGameMessage("Test", "12345"));
+            ExpectMsg<JoinGameResponse>();
             
-            IOActor.Tell(new SignupMessage("Test", "123456"));
-            Assert.AreEqual(ExpectMsg<ConfirmPlayerSignup>().AssignedName, "Test0");
+            gameActor.Tell(new JoinGameMessage("Test", "unique"));
+            Assert.AreEqual("Test0", ExpectMsg<JoinGameResponse>().AssignedName);
+            
         }
 
     }

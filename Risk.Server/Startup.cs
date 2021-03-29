@@ -25,26 +25,32 @@ namespace Risk.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
-            services.AddCors(options =>
+            try
             {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin()
-                               .AllowAnyMethod()
-                               .AllowAnyHeader();
-                    });
-            });
+                services.AddSignalR();
+                services.AddCors(options =>
+                {
+                    options.AddDefaultPolicy(
+                        builder =>
+                        {
+                            builder.AllowAnyOrigin()
+                                   .AllowAnyMethod()
+                                   .AllowAnyHeader();
+                        });
+                });
 
-            services.AddSingleton<RiskHub>();
-            services.AddSingleton(services => GameInitializer.InitializeGame(
-                int.Parse(Configuration["height"] ?? "5"),
-                int.Parse(Configuration["width"] ?? "5"),
-                int.Parse(Configuration["startingArmies"] ?? "5"),
-                services.GetService<RiskHub>(),
-                Configuration["StartGameCode"]
-                ));
+                services.AddSingleton<RiskHub>();
+                services.AddSingleton(services => GameInitializer.InitializeGame(
+                    int.Parse(Configuration["height"] ?? "5"),
+                    int.Parse(Configuration["width"] ?? "5"),
+                    int.Parse(Configuration["startingArmies"] ?? "5"),
+                    services.GetService<RiskHub>(),
+                    Configuration["StartGameCode"]
+                    ));
+            } catch(Exception e)
+            {
+
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

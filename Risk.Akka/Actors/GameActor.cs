@@ -8,10 +8,12 @@ namespace Risk.Akka.Actors
 {
     public class GameActor : ReceiveActor
     {
-        public string SecretCode { get; set; }
+        private string secretCode { get; set; }
+        private List<string> players { get; set; }
         public GameActor(string secretCode)
         {
-            SecretCode = secretCode;
+            this.secretCode = secretCode;
+            players = new();
             Become(Starting);
         }
 
@@ -19,14 +21,14 @@ namespace Risk.Akka.Actors
         {
             Receive<JoinGameMessage>(msg =>
             {
-                //update logic to finalize name later
-                var finalizedName = msg.RequestedName;
-                Sender.Tell(new JoinGameResponse(finalizedName));
+                var assignedName = AssignName(msg.RequestedName);
+                players.Add(assignedName);
+                Sender.Tell(new JoinGameResponse(assignedName, msg.ConnectionId));
             });
 
             Receive<StartGameMessage>(msg =>
             {
-                if(SecretCode == msg.SecretCode)
+                if(secretCode == msg.SecretCode)
                 {
                     Become(Running);
                     Sender.Tell(new GameStartingMessage());
@@ -47,5 +49,19 @@ namespace Risk.Akka.Actors
                 Sender.Tell(new UnableToJoinMessage());
             });
         }
+
+        private string AssignName(string requestedName)
+        {
+            int sameNames = 0;
+            var assignedPlayerName = requestedName;
+            while (players.Contains(assignedPlayerName))
+            {
+                assignedPlayerName = string.Concat(requestedName, sameNames.ToString());
+                sameNames++;
+            }
+            return assignedPlayerName;
+        }
+
+
     }
 }

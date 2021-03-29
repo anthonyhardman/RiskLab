@@ -8,6 +8,7 @@ using Risk.Game;
 using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 using Akka.Actor;
+using Risk.Akka;
 
 namespace Risk.Server.Hubs
 {
@@ -35,30 +36,10 @@ namespace Risk.Server.Hubs
             await Clients.All.SendMessage(user, message);
         }
 
-        public async Task Signup(string user)
+        public async Task Signup(string requestedName)
         {
-            //var duplicatePlayer = game.Players.ToList().FirstOrDefault(player => player.Token == Context.ConnectionId);
-            //if (duplicatePlayer != null)
-            //{
-            //    await Clients.Client(duplicatePlayer.Token).SendMessage("Server", $"There is already a player registered on your client named {duplicatePlayer.Name}");
-            //    (duplicatePlayer as Player).InvalidRequests++;
-            //}
-            //else
-            //{
-            //    int i = 1;
-            //    var baseName = user;
-            //    while (game.Players.Any(p => p.Name == user))
-            //    {
-            //        user = string.Concat(baseName, i.ToString());
-            //        i++;
-            //    }
-            //    logger.LogInformation(Context.ConnectionId.ToString() + ": " + user);
-            //    var newPlayer = new Player(Context.ConnectionId, user);
-            //    game.AddPlayer(newPlayer);
-            //    await BroadCastMessage(newPlayer.Name + " has joined the game");
-            //    await Clients.Client(newPlayer.Token).SendMessage("Server", "Welcome to the game " + newPlayer.Name);
-            //    await Clients.Client(newPlayer.Token).JoinConfirmation(newPlayer.Name);
-            //}
+            await Task.FromResult(false);
+            actorSystem.ActorSelection(ActorConstants.IOActorName).Tell(new SignupMessage(requestedName, Context.ConnectionId));
         }
 
         private async Task BroadCastMessage(string message)
@@ -282,9 +263,16 @@ namespace Risk.Server.Hubs
             //await Clients.All.SendStatus(game.GetGameStatus());
         }
 
-        public void JoinFailed(string connectionId)
+        public async Task JoinFailed(string connectionId)
         {
-            Clients.Client(connectionId).SendMessage("Server", "Unable to join game.");
+            await Clients.Client(connectionId).SendMessage("Server", "Unable to join game.");
+        }
+
+        public async Task JoinConfirmation(string assignedName, string connectionId)
+        {
+            await Clients.Client(connectionId).JoinConfirmation(assignedName);
+            await BroadCastMessage(assignedName + " has joined the game");
+            await Clients.Client(connectionId).SendMessage("Server", "Welcome to the game " + assignedName);
         }
     }
 }

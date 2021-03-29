@@ -10,12 +10,10 @@ namespace Risk.Akka.Actors
     {
         private readonly IRiskIOBridge riskIOBridge;
         Dictionary<IActorRef, string> players;
-        List<string> takenPlayerNames;
         public IOActor(IRiskIOBridge riskIOBridge)
         {
             this.riskIOBridge = riskIOBridge;
             players = new Dictionary<IActorRef, string>();
-            takenPlayerNames = new List<string>();
             Become(Active);
         }
 
@@ -31,13 +29,14 @@ namespace Risk.Akka.Actors
                     Sender.Tell(new UnableToJoinMessage());
                     return;
                 }
-                if (takenPlayerNames.Contains(assignedPlayerName))
-                {
-                    assignedPlayerName = uniquePlayerName(assignedPlayerName);
-                }
-                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedPlayerName)), ActorConstants.PlayerActorName);
+                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedPlayerName, msg.ConnectionId)), ActorConstants.PlayerActorName);
                 players.Add(newPlayer, msg.ConnectionId);
                 Sender.Tell(new ConfirmPlayerSignup(assignedPlayerName));
+            });
+
+            Receive<JoinGameResponse>(msg =>
+            {
+                riskIOBridge.JoinConfirmation(msg.AssignedName, msg.ConnectionId);
             });
 
             Receive<UnableToJoinMessage>(msg =>
@@ -47,15 +46,7 @@ namespace Risk.Akka.Actors
             });
         }
 
-        private string uniquePlayerName(string assignedPlayerName)
-        {
-            int sameNames = 0;
-            while (takenPlayerNames.Contains(assignedPlayerName))
-            {
-                assignedPlayerName = string.Concat(assignedPlayerName, sameNames.ToString());
-            }
-            return assignedPlayerName;
-        }
+        
     }
 
 }
