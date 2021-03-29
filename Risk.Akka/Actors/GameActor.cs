@@ -9,7 +9,7 @@ namespace Risk.Akka.Actors
     public class GameActor : ReceiveActor
     {
         public string SecretCode { get; set; }
-        public GameActor(string secretCode )
+        public GameActor(string secretCode)
         {
             SecretCode = secretCode;
             Become(Starting);

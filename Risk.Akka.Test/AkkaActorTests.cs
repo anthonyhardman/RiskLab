@@ -71,5 +71,13 @@ namespace Risk.Akka.Test
 
             Assert.NotNull(ExpectMsg<GameStartingMessage>());
         }
+
+        [Test]
+        public void UniquePlayerNameTest()
+        {
+            var IOActor = ActorOfAsTestActorRef(() => new IOActor(riskIOBridgeMock.Object), TestActor);
+            
+        }
+
     }
 }

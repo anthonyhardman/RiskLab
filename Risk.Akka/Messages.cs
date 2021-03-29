@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Risk.Akka
 {
     public record CannotStartGameMessage;
-    public record ConfirmPlayerSignup;
+    public record ConfirmPlayerSignup(string AssignedName);
     public record GameStartingMessage;
     public record JoinGameMessage(string RequestedName);
     public record JoinGameResponse(string AssignedName);
