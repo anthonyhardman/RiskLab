@@ -28,6 +28,7 @@ namespace Risk.Akka.Actors
                 if (players.ContainsValue(msg.ConnectionId))
                 {
                     riskIOBridge.JoinFailed(msg.ConnectionId);
+                    Sender.Tell(new UnableToJoinMessage());
                     return;
                 }
                 if (takenPlayerNames.Contains(assignedPlayerName))

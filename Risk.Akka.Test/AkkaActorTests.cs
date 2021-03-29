@@ -73,10 +73,15 @@ namespace Risk.Akka.Test
         }
 
         [Test]
-        public void UniquePlayerNameTest()
+        public void UniqueConnectionIdTest()
         {
             var IOActor = ActorOfAsTestActorRef(() => new IOActor(riskIOBridgeMock.Object), TestActor);
-            
+
+            IOActor.Tell(new SignupMessage("Test", "12345"));
+            ExpectMsg<ConfirmPlayerSignup>();
+
+            IOActor.Tell(new SignupMessage("Test2", "12345"));
+            Assert.NotNull(ExpectMsg<UnableToJoinMessage>());
         }
 
     }
