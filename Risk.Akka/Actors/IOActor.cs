@@ -2,6 +2,7 @@
 using Risk.Shared;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Risk.Akka.Actors
@@ -43,6 +44,17 @@ namespace Risk.Akka.Actors
             {
                 riskIOBridge.JoinFailed(players[Sender]);
                 players.Remove(Sender);
+            });
+
+            Receive<DeployMessage>(msg =>
+            {
+                var deployedPlayer = players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key;
+                deployedPlayer.Tell(msg);
+            });
+
+            Receive<ConfirmDeployMessage>(msg =>
+            {
+
             });
         }
 

@@ -97,5 +97,19 @@ namespace Risk.Akka.Test
             
         }
 
+        [Test]
+        public void DeployMessageToCorrectPlayer()
+        {
+            var IOActor = ActorOfAsTestActorRef(() => new IOActor(riskIOBridgeMock.Object), TestActor);
+
+            IOActor.Tell(new SignupMessage("Player1", "ConnString"));
+            Assert.NotNull(ExpectMsg<ConfirmPlayerSignup>());
+
+            IOActor.Tell(new DeployMessage(new Location(0,0), "ConnString"));
+            Assert.NotNull(ExpectMsg<ConfirmDeployMessage>());
+
+
+        }
+
     }
 }

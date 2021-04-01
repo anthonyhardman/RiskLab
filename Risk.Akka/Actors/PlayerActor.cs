@@ -40,6 +40,11 @@ namespace Risk.Akka.Actors
 
         public void Joined()
         {
+            Receive<DeployMessage>(msg =>
+            {
+                Context.ActorSelection(ActorConstants.GamePath).Tell(msg);
+                Sender.Tell(new ConfirmDeployMessage());
+            });
 
         }
     }
