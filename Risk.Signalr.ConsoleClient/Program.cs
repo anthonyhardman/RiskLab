@@ -54,7 +54,13 @@ namespace Risk.Signalr.ConsoleClient
 
             await hubConnection.StartAsync();
             Console.WriteLine("My connection id is " + hubConnection.ConnectionId);
-            await SignupAsync(playerName);
+            try
+            {
+                await SignupAsync(playerName);
+            } catch(Exception e)
+            {
+
+            }
             Console.ReadLine();
         }
 

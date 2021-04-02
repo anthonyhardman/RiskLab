@@ -1,0 +1,67 @@
+﻿akka{
+    loggers = ["Akka.Logger.Serilog.SerilogLogger, Akka.Logger.Serilog"]
+    //actor{
+    //    serialize-messages = off
+    //    deployment {
+    //        /LotterySupervisor/PeriodActor/VendorRoundRobin {
+    //            router = round-robin-pool
+    //            nr-of-instances = 20
+    //            cluster {
+    //                enabled = on
+    //                max-nr-of-instances-per-node = 20
+    //                use-role = lottery
+    //            }
+    //        }
+    //        ///LotterySupervisor/UserGenerator {
+    //        //    router = 
+    //        //    nr-of-instances = 30
+    //        //    cluster {
+    //        //        enabled = on
+    //        //        max-nr-of-instances-per-node = 20
+    //        //        use-role = lottery
+    //        //    }
+    //        //}
+    //    }
+    //}
+    //actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
+    //remote {
+    //    log-remote-lifecycle-events = DEBUG
+    //    dot-netty.tcp {
+    //        port = {{port}}
+    //        hostname = {{hostname}}
+    //    }
+    //}
+    //cluster {
+    //    seed-nodes = [""akka.tcp://lotteryactorsystem@172.20.176.1:4053""]
+    //    roles = [lottery]
+    //}
+    //akka.persistence{
+    //    journal{
+    //        plugin = ""akka.persistence.journal.postgresql""
+    //        postgresql{
+    //            plugin-dispatcher = ""akka.actor.default.dispatcher""
+    //            class = ""Akka.Persistence.Postgresql.Journal.PostgreSqlJournal, Akka.Persistence.PostgreSql""
+    //            connection-string = ""{{connection_string}}""
+    //            auto-initialize = on
+    //            schema-name = public
+    //            table-name = event_journal
+    //            metadata-table-name = metadata
+    //            stored-as = BYTEA
+    //            timestamp-provider = ""Akka.Persistence.Sql.Common.Journal.DefaultTimestampProvider, Akka.Persistence.Sql.Common""
+    //        }    
+    //    }
+    //snapshot-store {
+    //        plugin = ""akka.persistence.snapshot-store.postgresql""
+    //        postgresql{
+    //            class = ""Akka.Persistence.PostgreSql.Snapshot.PostgreSqlSnapshotStore, Akka.Persistence.PostgreSql""
+    //            plugin-dispatcher = ""akka.actor.default-dispatcher""
+    //            connection-string = ""{{connection_string}}""
+    //            schema-name = public
+    //            table-name = snapshot-store
+    //            auto-initialize = true
+    //            stored-as = BYTEA
+    //        }
+    //    }
+    //}
+}
+            

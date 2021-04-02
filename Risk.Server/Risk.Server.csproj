@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Akka" Version="1.4.17" />
+    <PackageReference Include="Akka.Logger.Serilog" Version="1.4.17" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="5.0.2" />
   </ItemGroup>
 
@@ -16,6 +17,12 @@
     <ProjectReference Include="..\Risk.Akka\Risk.Akka.csproj" />
     <ProjectReference Include="..\Risk.Game\Risk.Game.csproj" />
     <ProjectReference Include="..\Risk.Shared\Risk.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="risk.akka.hocon">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

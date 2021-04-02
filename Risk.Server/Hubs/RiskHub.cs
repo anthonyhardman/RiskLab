@@ -12,7 +12,7 @@ using Risk.Akka;
 
 namespace Risk.Server.Hubs
 {
-    public class RiskHub : Hub<IRiskHub>, IRiskIOBridge
+    public class RiskHub : Hub<IRiskHub>
     {
         private readonly ILogger<RiskHub> logger;
         private readonly IConfiguration config;

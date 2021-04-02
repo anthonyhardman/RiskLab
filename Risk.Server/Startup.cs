@@ -40,12 +40,13 @@ namespace Risk.Server
                 });
 
                 services.AddSingleton<RiskHub>();
+                services.AddSingleton<RiskBridge>();
                 services.AddSingleton(services => GameInitializer.InitializeGame(
                     int.Parse(Configuration["height"] ?? "5"),
                     int.Parse(Configuration["width"] ?? "5"),
                     int.Parse(Configuration["startingArmies"] ?? "5"),
-                    services.GetService<RiskHub>(),
-                    Configuration["StartGameCode"]
+                    Configuration["StartGameCode"],
+                    services.GetService<RiskBridge>()
                     ));
             } catch(Exception e)
             {
