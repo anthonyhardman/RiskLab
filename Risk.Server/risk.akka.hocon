@@ -1,5 +1,6 @@
 ﻿akka{
     loggers = ["Akka.Logger.Serilog.SerilogLogger, Akka.Logger.Serilog"]
+    log-dead-letters = on
     //actor{
     //    serialize-messages = off
     //    deployment {

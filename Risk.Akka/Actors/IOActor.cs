@@ -30,7 +30,7 @@ namespace Risk.Akka.Actors
                     Sender.Tell(new UnableToJoinMessage());
                     return;
                 }
-                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedPlayerName, msg.ConnectionId)), ActorConstants.PlayerActorName);
+                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedPlayerName, msg.ConnectionId)), msg.ConnectionId);
                 players.Add(newPlayer, msg.ConnectionId);
                 Sender.Tell(new ConfirmPlayerSignup(assignedPlayerName));
             });

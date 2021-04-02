@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 using Akka.Actor;
 using Risk.Akka;
+using static Risk.Shared.ActorNames;
 
 namespace Risk.Server.Hubs
 {
@@ -39,7 +40,7 @@ namespace Risk.Server.Hubs
         public async Task Signup(string requestedName)
         {
             await Task.FromResult(false);
-            actorSystem.ActorSelection(ActorConstants.IOActorName).Tell(new SignupMessage(requestedName, Context.ConnectionId));
+            actorSystem.ActorSelection(Path(ActorNames.IO)).Tell(new SignupMessage(requestedName, Context.ConnectionId));
         }
 
         private async Task BroadCastMessage(string message)

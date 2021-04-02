@@ -3,6 +3,7 @@ using Risk.Shared;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Risk.Shared.ActorNames;
 
 namespace Risk.Akka.Actors
 {
@@ -13,7 +14,7 @@ namespace Risk.Akka.Actors
         public string AssignedName { get; set; }
         public PlayerActor(string requestedName, string connectionId)
         {
-            Context.ActorSelection(ActorConstants.GamePath).Tell(new JoinGameMessage(requestedName, connectionId));
+            Context.ActorSelection(Path(ActorNames.Game)).Tell(new JoinGameMessage(requestedName, connectionId));
             this.connectionId = connectionId; 
             Become(Joining);
         }
@@ -42,7 +43,7 @@ namespace Risk.Akka.Actors
         {
             Receive<DeployMessage>(msg =>
             {
-                Context.ActorSelection(ActorConstants.GamePath).Tell(msg);
+                Context.ActorSelection(Path(ActorNames.Game)).Tell(msg);
                 Sender.Tell(new ConfirmDeployMessage());
             });
 

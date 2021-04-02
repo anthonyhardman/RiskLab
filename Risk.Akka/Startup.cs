@@ -9,6 +9,7 @@ using System.IO;
 using Risk.Akka.Actors;
 using Risk.Shared;
 using System.Net;
+using Serilog;
 
 namespace Risk.Akka
 {
@@ -16,11 +17,17 @@ namespace Risk.Akka
     {
         public static ActorSystem Init(string secretCode, IRiskIOBridge riskIOBridge)
         {
+            var logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .MinimumLevel.Information()
+                .CreateLogger();
+
+            Serilog.Log.Logger = logger;
             var hocon = File.ReadAllText("risk.akka.hocon");
             var config = ConfigurationFactory.ParseString(hocon);
             var actorSystem = ActorSystem.Create("Risk", config);
-            actorSystem.ActorOf(Props.Create(() => new IOActor(riskIOBridge)), ActorConstants.IOActorName);
-            actorSystem.ActorOf(Props.Create(() => new GameActor(secretCode)), ActorConstants.GameActorName);
+            actorSystem.ActorOf(Props.Create(() => new IOActor(riskIOBridge)), ActorNames.IO);
+            actorSystem.ActorOf(Props.Create(() => new GameActor(secretCode)), ActorNames.Game);
             return actorSystem;
         }
     }
