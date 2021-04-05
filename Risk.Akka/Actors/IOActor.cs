@@ -11,9 +11,11 @@ namespace Risk.Akka.Actors
     {
         private readonly IRiskIOBridge riskIOBridge;
         Dictionary<IActorRef, string> players;
+        private ActorSelection gameActor;
         public IOActor(IRiskIOBridge riskIOBridge)
         {
             this.riskIOBridge = riskIOBridge;
+            gameActor = Context.ActorSelection(ActorNames.Path(ActorNames.Game));
             players = new Dictionary<IActorRef, string>();
             Become(Active);
         }
@@ -22,7 +24,6 @@ namespace Risk.Akka.Actors
         {
             Receive<SignupMessage>(msg =>
             {
-                var assignedPlayerName = msg.RequestedName;
 
                 if (players.ContainsValue(msg.ConnectionId))
                 {
@@ -30,9 +31,9 @@ namespace Risk.Akka.Actors
                     Sender.Tell(new UnableToJoinMessage());
                     return;
                 }
-                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedPlayerName, msg.ConnectionId)), msg.ConnectionId);
+                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(msg.RequestedName, msg.ConnectionId)), msg.ConnectionId);
                 players.Add(newPlayer, msg.ConnectionId);
-                Sender.Tell(new ConfirmPlayerSignup(assignedPlayerName));
+                gameActor.Tell(new JoinGameMessage(msg.RequestedName, newPlayer));
             });
 
             Receive<JoinGameResponse>(msg =>

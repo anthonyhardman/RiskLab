@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Server", "Risk.Server\Risk.Server.csproj", "{EA9747EF-CC42-4A3C-A996-81E04B661EA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Game", "Risk.Game\Risk.Game.csproj", "{EADE98C2-4575-438A-BDFB-01092EEB62B8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Shared", "Risk.Shared\Risk.Shared.csproj", "{63502A14-BF7C-40C8-863E-E726B4D9FA56}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.SampleClient", "Risk.SampleClient\Risk.SampleClient.csproj", "{4A121FD7-0485-4793-A0C7-FC70F1A2BBD9}"
@@ -23,9 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		StartGame.ps1 = StartGame.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.Akka.Test", "Risk.Akka.Test\Risk.Akka.Test.csproj", "{30A759C8-7D5C-443D-9F66-142B037B32A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Akka.Test", "Risk.Akka.Test\Risk.Akka.Test.csproj", "{30A759C8-7D5C-443D-9F66-142B037B32A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.Akka", "Risk.Akka\Risk.Akka.csproj", "{FF4334F3-72DB-4594-81E1-226C10C84AA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Akka", "Risk.Akka\Risk.Akka.csproj", "{FF4334F3-72DB-4594-81E1-226C10C84AA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +35,6 @@ Global
 		{EA9747EF-CC42-4A3C-A996-81E04B661EA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA9747EF-CC42-4A3C-A996-81E04B661EA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA9747EF-CC42-4A3C-A996-81E04B661EA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EADE98C2-4575-438A-BDFB-01092EEB62B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EADE98C2-4575-438A-BDFB-01092EEB62B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EADE98C2-4575-438A-BDFB-01092EEB62B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EADE98C2-4575-438A-BDFB-01092EEB62B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{63502A14-BF7C-40C8-863E-E726B4D9FA56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{63502A14-BF7C-40C8-863E-E726B4D9FA56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63502A14-BF7C-40C8-863E-E726B4D9FA56}.Release|Any CPU.ActiveCfg = Release|Any CPU

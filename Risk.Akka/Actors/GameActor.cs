@@ -4,28 +4,27 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Risk.Game;
+using System.Linq;
 
 namespace Risk.Akka.Actors
 {
     public class GameActor : ReceiveActor
     {
         private string secretCode { get; set; }
-        private List<string> players { get; set; }
         private Risk.Game.Game game { get; set; }
         public GameActor(string secretCode, GameStartOptions startOptions)
         {
             this.secretCode = secretCode;
-            players = new();
             game = new Game.Game(startOptions);
             Become(Starting);
         }
 
         public void Starting()
         {
-            Receive<JoinGameMessage>(msg =>
+            Receive<JoinGameMessage>(async msg =>
             {
                 var assignedName = AssignName(msg.RequestedName);
-                players.Add(assignedName);
+                game.Players.Add(msg.Actor);
                 Sender.Tell(new JoinGameResponse(assignedName, msg.ConnectionId));
             });
 
@@ -52,6 +51,12 @@ namespace Risk.Akka.Actors
 
             Receive<GameDeployMessage>(msg =>
             {
+                if (isNotCurrentPlayer(msg.ConnectionId))
+                {
+                    //send bad player actor an invalid request message
+                    //send unable to deploy message to player
+                    return;
+                }
                 if (game.TryPlaceArmy(msg.AssignedName, msg.to))
                 {
                     Sender.Tell(new ConfirmDeployMessage());
@@ -59,11 +64,14 @@ namespace Risk.Akka.Actors
             });
         }
 
+        private bool isNotCurrentPlayer(string connectionId) => game.CurrentPlayer.Token != connectionId;
+
+
         private string AssignName(string requestedName)
         {
-            int sameNames = 0;
+            int sameNames = 2;
             var assignedPlayerName = requestedName;
-            while (players.Contains(assignedPlayerName))
+            while (game.Players.Any(p => p.Name == assignedPlayerName))
             {
                 assignedPlayerName = string.Concat(requestedName, sameNames.ToString());
                 sameNames++;

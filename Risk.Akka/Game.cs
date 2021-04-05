@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Akka.Actor;
 using Risk.Shared;
 
 namespace Risk.Game
@@ -13,25 +14,12 @@ namespace Risk.Game
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
             gameState = GameState.Initializing;
-            playerDictionary = new ConcurrentDictionary<string, IPlayer>();
         }
-        public IPlayer CurrentPlayer { get; set; }
-        private readonly ConcurrentDictionary<string, IPlayer> playerDictionary;
-        public IEnumerable<IPlayer> Players => playerDictionary.Values;
+        public IActorRef CurrentPlayer { get; set; }
+        public List<IActorRef> Players { get; } = new List<IActorRef>();
 
         public int numberOfCardTurnIns = 1;
-        public void AddPlayer(IPlayer newPlayer)
-        {
-            playerDictionary.TryAdd(newPlayer.Token, newPlayer);
-        }
-        public int OutstandingAttackRequestCount { get; set; }
-
-        public IPlayer RemovePlayerByToken(string token)
-        {
-            if (playerDictionary.TryRemove(token, out var player))
-                return player;
-            throw new KeyNotFoundException($"Unable to locate player with token ${token} in list of players.");
-        }
+        
 
         public Board Board { get; }
         private GameState gameState { get; set; }
@@ -63,11 +51,7 @@ namespace Risk.Game
 
         public void StartGame()
         {
-            var playerList = playerDictionary.ToList();
-            playerList.Shuffle();
-            playerDictionary.Clear();
-            playerList.ForEach(p => playerDictionary.TryAdd(p.Key, p.Value));
-
+            Players.Shuffle();
             gameState = GameState.Deploying;
         }
 

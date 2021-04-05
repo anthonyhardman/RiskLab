@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Risk.Akka\Risk.Akka.csproj" />
-    <ProjectReference Include="..\Risk.Game\Risk.Game.csproj" />
     <ProjectReference Include="..\Risk.Shared\Risk.Shared.csproj" />
   </ItemGroup>
 

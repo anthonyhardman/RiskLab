@@ -43,7 +43,7 @@ namespace Risk.Akka.Actors
         {
             Receive<DeployMessage>(msg =>
             {
-                Context.ActorSelection(Path(ActorNames.Game)).Tell(new GameDeployMessage(msg.to, AssignedName));
+                Context.ActorSelection(Path(ActorNames.Game)).Tell(new GameDeployMessage(msg.To, AssignedName));
             });
 
             Receive<ConfirmDeployMessage>(msg =>

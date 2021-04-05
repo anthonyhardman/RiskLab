@@ -17,7 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Risk.Server\Risk.Server.csproj" />
     <ProjectReference Include="..\Risk.Shared\Risk.Shared.csproj" />
-    <ProjectReference Include="..\Risk.Game\Risk.Game.csproj" />
   </ItemGroup>
 
 </Project>
