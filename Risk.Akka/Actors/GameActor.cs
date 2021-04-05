@@ -50,9 +50,12 @@ namespace Risk.Akka.Actors
                 Sender.Tell(new UnableToJoinMessage());
             });
 
-            Receive<DeployMessage>(msg =>
+            Receive<GameDeployMessage>(msg =>
             {
-
+                if (game.TryPlaceArmy(msg.AssignedName, msg.to))
+                {
+                    Sender.Tell(new ConfirmDeployMessage());
+                }
             });
         }
 

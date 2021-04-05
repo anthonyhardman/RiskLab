@@ -17,5 +17,6 @@ namespace Risk.Akka
     public record StartGameMessage(string SecretCode);
     public record UnableToJoinMessage;
     public record DeployMessage(Location to, string ConnectionId);
+    public record GameDeployMessage(Location to, string AssignedName);
     public record ConfirmDeployMessage();
 }

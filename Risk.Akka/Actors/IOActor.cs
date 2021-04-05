@@ -54,7 +54,7 @@ namespace Risk.Akka.Actors
 
             Receive<ConfirmDeployMessage>(msg =>
             {
-
+                riskIOBridge.
             });
         }
 

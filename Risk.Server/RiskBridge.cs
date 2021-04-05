@@ -25,5 +25,10 @@ namespace Risk.Server
         {
             await riskHub.JoinFailed(connectionId);
         }
+
+        public Task ConfirmDeploy(string connectionId)
+        {
+            await riskHub.
+        }
     }
 }
