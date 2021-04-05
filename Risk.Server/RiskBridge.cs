@@ -26,9 +26,9 @@ namespace Risk.Server
             await riskHub.JoinFailed(connectionId);
         }
 
-        public Task ConfirmDeploy(string connectionId)
+        public async Task ConfirmDeploy(string connectionId)
         {
-            await riskHub.
+            await riskHub.ConfirmDeploy(connectionId);
         }
     }
 }

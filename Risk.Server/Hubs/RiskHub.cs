@@ -275,5 +275,10 @@ namespace Risk.Server.Hubs
             await BroadCastMessage(assignedName + " has joined the game");
             await Clients.Client(connectionId).SendMessage("Server", "Welcome to the game " + assignedName);
         }
+
+        public async Task ConfirmDeploy(string connectionId)
+        {
+            await Clients.Client(connectionId).SendMessage("Server", "Successfully Deployed");
+        }
     }
 }

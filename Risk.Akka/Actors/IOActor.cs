@@ -32,7 +32,7 @@ namespace Risk.Akka.Actors
                 }
                 var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedPlayerName, msg.ConnectionId)), msg.ConnectionId);
                 players.Add(newPlayer, msg.ConnectionId);
-                //Sender.Tell(new ConfirmPlayerSignup(assignedPlayerName));
+                Sender.Tell(new ConfirmPlayerSignup(assignedPlayerName));
             });
 
             Receive<JoinGameResponse>(msg =>
@@ -54,7 +54,7 @@ namespace Risk.Akka.Actors
 
             Receive<ConfirmDeployMessage>(msg =>
             {
-                riskIOBridge.
+                //riskIOBridge.
             });
         }
 

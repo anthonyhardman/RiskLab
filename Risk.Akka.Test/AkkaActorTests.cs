@@ -17,8 +17,9 @@ namespace Risk.Akka.Test
         public void Setup()
         {
             riskIOBridgeMock = new Mock<IRiskIOBridge>();
+            startOptions = new GameStartOptions() { Height = 3, StartingArmiesPerPlayer = 3, Width = 3 };
         }
-
+        GameStartOptions startOptions;
         Mock<IRiskIOBridge> riskIOBridgeMock;
 
         [Test]
@@ -35,7 +36,7 @@ namespace Risk.Akka.Test
         [Test]
         public void TestPlayerUnableToJoinGame()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
             gameActor.Tell(new StartGameMessage("SecretCode"));
             ExpectMsg<GameStartingMessage>();
 
@@ -47,7 +48,7 @@ namespace Risk.Akka.Test
         [Test]
         public void TestPlayerGameInteraction()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
 
             gameActor.Tell(new JoinGameMessage("Test", "12345"));
             
@@ -57,7 +58,7 @@ namespace Risk.Akka.Test
         [Test]
         public void BadPasswordAuthentication()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
             gameActor.Tell(new StartGameMessage("NotCorrect"));
 
             Assert.NotNull(ExpectMsg<CannotStartGameMessage>());
@@ -66,7 +67,7 @@ namespace Risk.Akka.Test
         [Test]
         public void SuccessfulPasswordAuthentication()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
             gameActor.Tell(new StartGameMessage("SecretCode"));
 
             Assert.NotNull(ExpectMsg<GameStartingMessage>());
@@ -87,27 +88,18 @@ namespace Risk.Akka.Test
         [Test]
         public void UniquePlayerName()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
 
             gameActor.Tell(new JoinGameMessage("Test", "12345"));
             ExpectMsg<JoinGameResponse>();
             
             gameActor.Tell(new JoinGameMessage("Test", "unique"));
             Assert.AreEqual("Test0", ExpectMsg<JoinGameResponse>().AssignedName);
-            
         }
 
         [Test]
-        public void DeployMessageToCorrectPlayer()
+        public void DeployMessageTest()
         {
-            var IOActor = ActorOfAsTestActorRef(() => new IOActor(riskIOBridgeMock.Object), TestActor);
-
-            IOActor.Tell(new SignupMessage("Player1", "ConnString"));
-            Assert.NotNull(ExpectMsg<ConfirmPlayerSignup>());
-
-            IOActor.Tell(new DeployMessage(new Location(0,0), "ConnString"));
-            Assert.NotNull(ExpectMsg<ConfirmDeployMessage>());
-
 
         }
 
