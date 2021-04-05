@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Risk.Game\Risk.Game.csproj" />
     <ProjectReference Include="..\Risk.Shared\Risk.Shared.csproj" />
   </ItemGroup>
 

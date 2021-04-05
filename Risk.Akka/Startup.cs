@@ -15,7 +15,7 @@ namespace Risk.Akka
 {
     public static class Startup
     {
-        public static ActorSystem Init(string secretCode, IRiskIOBridge riskIOBridge)
+        public static ActorSystem Init(string secretCode, IRiskIOBridge riskIOBridge, GameStartOptions startOptions)
         {
             var logger = new LoggerConfiguration()
                 .WriteTo.Console()
@@ -27,7 +27,7 @@ namespace Risk.Akka
             var config = ConfigurationFactory.ParseString(hocon);
             var actorSystem = ActorSystem.Create("Risk", config);
             actorSystem.ActorOf(Props.Create(() => new IOActor(riskIOBridge)), ActorNames.IO);
-            actorSystem.ActorOf(Props.Create(() => new GameActor(secretCode)), ActorNames.Game);
+            var gameActor = actorSystem.ActorOf(Props.Create(() => new GameActor(secretCode, startOptions)), ActorNames.Game);
             return actorSystem;
         }
     }

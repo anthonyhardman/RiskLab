@@ -3,6 +3,7 @@ using Risk.Shared;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Risk.Game;
 
 namespace Risk.Akka.Actors
 {
@@ -10,10 +11,12 @@ namespace Risk.Akka.Actors
     {
         private string secretCode { get; set; }
         private List<string> players { get; set; }
-        public GameActor(string secretCode)
+        private Risk.Game.Game game { get; set; }
+        public GameActor(string secretCode, GameStartOptions startOptions)
         {
             this.secretCode = secretCode;
             players = new();
+            game = new Game.Game(startOptions);
             Become(Starting);
         }
 
@@ -38,8 +41,6 @@ namespace Risk.Akka.Actors
                     Sender.Tell(new CannotStartGameMessage());
                 }
             });
-
-            
         }
 
         public void Running()
@@ -47,6 +48,11 @@ namespace Risk.Akka.Actors
             Receive<JoinGameMessage>(_ =>
             {
                 Sender.Tell(new UnableToJoinMessage());
+            });
+
+            Receive<DeployMessage>(msg =>
+            {
+
             });
         }
 

@@ -21,7 +21,7 @@ namespace Risk.Server
             };
             Game.Game newGame = new Game.Game(startOptions);
 
-            var actorSystem = Risk.Akka.Startup.Init(secretCode, riskBridge);
+            var actorSystem = Risk.Akka.Startup.Init(secretCode, riskBridge, startOptions);
             return actorSystem;
         }
 
