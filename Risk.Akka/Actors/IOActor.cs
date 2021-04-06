@@ -28,7 +28,6 @@ namespace Risk.Akka.Actors
                 if (players.ContainsValue(msg.ConnectionId))
                 {
                     riskIOBridge.JoinFailed(msg.ConnectionId);
-                    Sender.Tell(new UnableToJoinMessage());
                     return;
                 }
                 var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(msg.RequestedName, msg.ConnectionId)), msg.ConnectionId);
@@ -38,7 +37,7 @@ namespace Risk.Akka.Actors
 
             Receive<JoinGameResponse>(msg =>
             {
-                riskIOBridge.JoinConfirmation(msg.AssignedName, msg.ConnectionId);
+                riskIOBridge.JoinConfirmation(msg.AssignedName, players[Sender]);
             });
 
             Receive<UnableToJoinMessage>(msg =>

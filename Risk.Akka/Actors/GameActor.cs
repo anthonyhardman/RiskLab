@@ -12,20 +12,23 @@ namespace Risk.Akka.Actors
     {
         private string secretCode { get; set; }
         private Risk.Game.Game game { get; set; }
+        private List<string> names { get; set; }
         public GameActor(string secretCode, GameStartOptions startOptions)
         {
             this.secretCode = secretCode;
             game = new Game.Game(startOptions);
+            names = new();
             Become(Starting);
         }
 
         public void Starting()
         {
-            Receive<JoinGameMessage>(async msg =>
+            Receive<JoinGameMessage>(msg =>
             {
                 var assignedName = AssignName(msg.RequestedName);
+                names.Add(assignedName);
                 game.Players.Add(msg.Actor);
-                Sender.Tell(new JoinGameResponse(assignedName, msg.ConnectionId));
+                msg.Actor.Tell(new JoinGameResponse(assignedName));
             });
 
             Receive<StartGameMessage>(msg =>
@@ -51,27 +54,27 @@ namespace Risk.Akka.Actors
 
             Receive<GameDeployMessage>(msg =>
             {
-                if (isNotCurrentPlayer(msg.ConnectionId))
+                if (isNotCurrentPlayer(Sender))
                 {
                     //send bad player actor an invalid request message
                     //send unable to deploy message to player
                     return;
                 }
-                if (game.TryPlaceArmy(msg.AssignedName, msg.to))
+                if (game.TryPlaceArmy(msg.ConnectionId, msg.To))
                 {
                     Sender.Tell(new ConfirmDeployMessage());
                 }
             });
         }
 
-        private bool isNotCurrentPlayer(string connectionId) => game.CurrentPlayer.Token != connectionId;
+        private bool isNotCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer != CurrentPlayer;
 
 
         private string AssignName(string requestedName)
         {
             int sameNames = 2;
             var assignedPlayerName = requestedName;
-            while (game.Players.Any(p => p.Name == assignedPlayerName))
+            while (names.Contains(assignedPlayerName))
             {
                 assignedPlayerName = string.Concat(requestedName, sameNames.ToString());
                 sameNames++;

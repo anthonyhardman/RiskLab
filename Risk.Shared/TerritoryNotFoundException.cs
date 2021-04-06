@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Risk.Game
 {
     [Serializable]
-    internal class TerritoryNotFoundException : Exception
+    public class TerritoryNotFoundException : Exception
     {
         public TerritoryNotFoundException()
         {
