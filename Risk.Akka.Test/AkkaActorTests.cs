@@ -37,10 +37,11 @@ namespace Risk.Akka.Test
         public void TestPlayerUnableToJoinGame()
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
+            var playerActor = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
             gameActor.Tell(new StartGameMessage("SecretCode"));
             ExpectMsg<GameStartingMessage>();
 
-            gameActor.Tell(new JoinGameMessage("Test", "12345"));
+            gameActor.Tell(new JoinGameMessage("Test", playerActor));
             
             Assert.NotNull(ExpectMsg<UnableToJoinMessage>());
         }
@@ -49,8 +50,10 @@ namespace Risk.Akka.Test
         public void TestPlayerGameInteraction()
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
+            var playerActor = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
 
-            gameActor.Tell(new JoinGameMessage("Test", "12345"));
+
+            gameActor.Tell(new JoinGameMessage("Test", playerActor));
             
             Assert.NotNull(ExpectMsg<JoinGameResponse>());
         }
@@ -89,12 +92,15 @@ namespace Risk.Akka.Test
         public void UniquePlayerName()
         {
             var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
+            var playerActor = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
+            var playerActor2 = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
 
-            gameActor.Tell(new JoinGameMessage("Test", "12345"));
+
+            gameActor.Tell(new JoinGameMessage("Test", playerActor));
             ExpectMsg<JoinGameResponse>();
             
-            gameActor.Tell(new JoinGameMessage("Test", "unique"));
-            Assert.AreEqual("Test0", ExpectMsg<JoinGameResponse>().AssignedName);
+            gameActor.Tell(new JoinGameMessage("Test", playerActor2));
+            Assert.AreEqual("Test2", ExpectMsg<JoinGameResponse>().AssignedName);
         }
 
         [Test]

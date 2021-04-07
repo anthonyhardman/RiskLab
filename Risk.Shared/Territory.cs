@@ -18,10 +18,10 @@ namespace Risk.Shared
         public Location Location { get; set; }
 
         [JsonIgnore]
-        public IPlayer Owner { get; set; }
+        public string Owner { get; set; }
 
         public int Armies { get; set; }
 
-        public override string ToString() => $"{Location}: {Armies:n0} of {Owner?.Name ?? "(Unoccupied)"}";
+        public override string ToString() => $"{Location}: {Armies:n0} of {Owner ?? "(Unoccupied)"}";
     }
 }

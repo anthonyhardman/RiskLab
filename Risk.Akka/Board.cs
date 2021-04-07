@@ -19,7 +19,7 @@ namespace Risk.Game
         public IEnumerable<BoardTerritory> SerializableTerritories =>
             Territories.Select(b => new BoardTerritory
             {
-                OwnerName = b.Owner?.Name,
+                OwnerName = b.Owner,
                 Armies = b.Armies,
                 Location = b.Location
             });
@@ -71,7 +71,7 @@ namespace Risk.Game
                    select new BoardTerritory {
                        Armies = t.Armies,
                        Location = t.Location,
-                       OwnerName = t.Owner?.Name
+                       OwnerName = t.Owner
                    };
         }
     }

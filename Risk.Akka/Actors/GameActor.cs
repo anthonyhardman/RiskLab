@@ -60,7 +60,7 @@ namespace Risk.Akka.Actors
                     //send unable to deploy message to player
                     return;
                 }
-                if (game.TryPlaceArmy(msg.ConnectionId, msg.To))
+                if (game.TryPlaceArmy(Sender, msg.To))
                 {
                     Sender.Tell(new ConfirmDeployMessage());
                 }
