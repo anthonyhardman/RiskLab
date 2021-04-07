@@ -12,9 +12,12 @@ namespace Risk.Akka.Actors
         private readonly IRiskIOBridge riskIOBridge;
         Dictionary<IActorRef, string> players;
         private ActorSelection gameActor;
+        private List<string> names { get; set; }
+
         public IOActor(IRiskIOBridge riskIOBridge)
         {
             this.riskIOBridge = riskIOBridge;
+            names = new();
             gameActor = Context.ActorSelection(ActorNames.Path(ActorNames.Game));
             players = new Dictionary<IActorRef, string>();
             Become(Active);
@@ -30,9 +33,12 @@ namespace Risk.Akka.Actors
                     riskIOBridge.JoinFailed(msg.ConnectionId);
                     return;
                 }
-                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(msg.RequestedName, msg.ConnectionId)), msg.ConnectionId);
+                var assignedName = AssignName(msg.RequestedName);
+                names.Add(assignedName);
+                var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedName, msg.ConnectionId)), msg.ConnectionId);
+                gameActor.Tell(new JoinGameMessage(assignedName, newPlayer));
                 players.Add(newPlayer, msg.ConnectionId);
-                gameActor.Tell(new JoinGameMessage(msg.RequestedName, newPlayer));
+                riskIOBridge.JoinConfirmation(assignedName, msg.ConnectionId);
             });
 
             Receive<JoinGameResponse>(msg =>
@@ -58,7 +64,19 @@ namespace Risk.Akka.Actors
             });
         }
 
-        
+        private string AssignName(string requestedName)
+        {
+            int sameNames = 2;
+            var assignedPlayerName = requestedName;
+            while (names.Contains(assignedPlayerName))
+            {
+                assignedPlayerName = string.Concat(requestedName, sameNames.ToString());
+                sameNames++;
+            }
+            return assignedPlayerName;
+        }
+
+
     }
 
 }

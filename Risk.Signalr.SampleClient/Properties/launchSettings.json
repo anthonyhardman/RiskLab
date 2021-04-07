@@ -16,6 +16,7 @@
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:5005",
+      "commandLineArgs": "localhost:5000",
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}"
     }
   }

@@ -45,7 +45,7 @@ namespace Risk.Server.Hubs
 
         private async Task BroadCastMessage(string message)
         {
-            //await Clients.All.SendMessage("Server", message);
+            await Clients.All.SendMessage("Server", message);
         }
 
         public async Task GetStatus()

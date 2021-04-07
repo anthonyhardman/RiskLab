@@ -9,6 +9,7 @@ namespace Risk.Game
 {
     public class Game
     {
+
         public Game(GameStartOptions startOptions)
         {
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
@@ -17,6 +18,9 @@ namespace Risk.Game
         }
         public IActorRef CurrentPlayer { get; set; }
         public List<IActorRef> Players { get; } = new List<IActorRef>();
+        public Dictionary<IActorRef, string> AssignedNames { get; } = new();
+
+        private string playerName(IActorRef player) => AssignedNames[player];
 
         public int numberOfCardTurnIns = 1;
         
@@ -73,11 +77,11 @@ namespace Risk.Game
 
             if (territory.Owner == null)
             {
-                territory.Owner = player.Path.Name;
+                territory.Owner = playerName(player);
                 territory.Armies = 1;
                 placeResult = true;
             }
-            else if (territory.Owner != player.Path.Name)
+            else if (territory.Owner != playerName(player))
             {
                 placeResult = false;
             }
@@ -104,7 +108,7 @@ namespace Risk.Game
         {
             foreach (Territory territory in Board.Territories)
             {
-                if (territory.Owner == player.Path.Name)
+                if (territory.Owner == playerName(player))
                 {
                     territory.Owner = null;
                     territory.Armies = 0;
@@ -134,15 +138,15 @@ namespace Risk.Game
         {
             var territoryFrom = Board.Territories.Single(t => t.Location == from);
             var territoryTo = Board.Territories.Single(t => t.Location == to);
-            return territoryFrom.Owner == player.Path.Name && territoryTo.Owner != player.Path.Name;
+            return territoryFrom.Owner == playerName(player) && territoryTo.Owner != playerName(player);
         }
 
         public bool PlayerCanAttack(IActorRef player)
         {
-            foreach (var territory in Board.Territories.Where(t => t.Owner == player.Path.Name && EnoughArmiesToAttack(t)))
+            foreach (var territory in Board.Territories.Where(t => t.Owner == playerName(player) && EnoughArmiesToAttack(t)))
             {
                 var neighbors = Board.GetNeighbors(territory);
-                return neighbors.Any(n => n.Owner != player.Path.Name);
+                return neighbors.Any(n => n.Owner != playerName(player));
             }
             return false;
         }
@@ -169,7 +173,7 @@ namespace Risk.Game
         public int GetNumPlacedArmies(IActorRef player)
         {
             return Board.Territories
-                        .Where(t => t.Owner == player.Path.Name)
+                        .Where(t => t.Owner == playerName(player))
                         .Sum(t => t.Armies);
         }
 
@@ -279,7 +283,7 @@ namespace Risk.Game
                  && Board.AttackTargetLocationIsValid(attackingTerritory.Location, defendingTerritory.Location);
         }
 
-        public int GetNumTerritories(IActorRef player) => Board.Territories.Count(t => t.Owner == player.Path.Name);
+        public int GetNumTerritories(IActorRef player) => Board.Territories.Count(t => t.Owner == playerName(player));
 
         public void BattleWasWon(Territory attackingTerritory, Territory defendingTerritory)
         {

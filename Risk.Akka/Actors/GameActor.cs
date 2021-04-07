@@ -12,12 +12,10 @@ namespace Risk.Akka.Actors
     {
         private string secretCode { get; set; }
         private Risk.Game.Game game { get; set; }
-        private List<string> names { get; set; }
         public GameActor(string secretCode, GameStartOptions startOptions)
         {
             this.secretCode = secretCode;
             game = new Game.Game(startOptions);
-            names = new();
             Become(Starting);
         }
 
@@ -25,10 +23,8 @@ namespace Risk.Akka.Actors
         {
             Receive<JoinGameMessage>(msg =>
             {
-                var assignedName = AssignName(msg.RequestedName);
-                names.Add(assignedName);
                 game.Players.Add(msg.Actor);
-                msg.Actor.Tell(new JoinGameResponse(assignedName));
+                game.AssignedNames.Add(msg.Actor, msg.AssignedName);
             });
 
             Receive<StartGameMessage>(msg =>
@@ -70,17 +66,7 @@ namespace Risk.Akka.Actors
         private bool isNotCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer != CurrentPlayer;
 
 
-        private string AssignName(string requestedName)
-        {
-            int sameNames = 2;
-            var assignedPlayerName = requestedName;
-            while (names.Contains(assignedPlayerName))
-            {
-                assignedPlayerName = string.Concat(requestedName, sameNames.ToString());
-                sameNames++;
-            }
-            return assignedPlayerName;
-        }
+        
 
 
     }
