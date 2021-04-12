@@ -12,9 +12,9 @@ namespace Risk.Akka.Actors
         private readonly string connectionId;
 
         public string AssignedName { get; set; }
-        public PlayerActor(string requestedName, string connectionId)
+        public PlayerActor(string assignedName, string connectionId)
         {
-            Context.ActorSelection(Path(ActorNames.Game)).Tell(new JoinGameMessage(requestedName, Context.Self));
+            this.AssignedName = assignedName;
             this.connectionId = connectionId; 
             Become(Joining);
         }
@@ -23,7 +23,6 @@ namespace Risk.Akka.Actors
         {
             Receive<JoinGameResponse>(msg =>
             {
-                AssignedName = msg.AssignedName;
                 Context.Parent.Tell(new TellUserJoinedMessage(AssignedName, connectionId));
                 Become(Joined);
             });

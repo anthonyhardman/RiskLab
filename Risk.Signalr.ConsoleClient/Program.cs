@@ -52,6 +52,11 @@ namespace Risk.Signalr.ConsoleClient
                 Console.WriteLine($"Successfully joined server. Assigned Name is {validatedName}");
             });
 
+            hubConnection.On<string, string>(MessageTypes.SendMessage, (name, message) =>
+            {
+                Console.WriteLine(name + ": " + message);
+            });
+
             await hubConnection.StartAsync();
             Console.WriteLine("My connection id is " + hubConnection.ConnectionId);
             try
