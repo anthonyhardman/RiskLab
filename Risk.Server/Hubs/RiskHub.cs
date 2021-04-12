@@ -39,6 +39,11 @@ namespace Risk.Server.Hubs
             await Clients.All.SendMessage(user, message);
         }
 
+        internal Task AskUserDeploy(string connectionId, Board board)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task Signup(string requestedName)
         {
             await Task.FromResult(false);

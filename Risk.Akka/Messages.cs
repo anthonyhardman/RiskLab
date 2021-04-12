@@ -23,4 +23,5 @@ namespace Risk.Akka
     public record GameDeployMessage(Location To, string ConnectionId);
     public record ConfirmDeployMessage();
     public record InvalidPlayerRequestMessage;
+    public record TellUserDeployMessage(IActorRef Player, Board Board);
 }

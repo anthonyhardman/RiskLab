@@ -35,5 +35,10 @@ namespace Risk.Server
         {
             await riskHub.AnnounceStartGame();
         }
+
+        public async Task AskUserDeploy(string connectionId, Board board)
+        {
+            await riskHub.AskUserDeploy(connectionId, board);
+        }
     }
 }

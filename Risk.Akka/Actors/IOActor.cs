@@ -72,6 +72,11 @@ namespace Risk.Akka.Actors
             {
                 riskIOBridge.GameStarting();
             });
+
+            Receive<TellUserDeployMessage>(msg =>
+            {
+                riskIOBridge.AskUserDeploy(players[msg.Player], msg.Board);
+            });
         }
 
         private string AssignName(string requestedName)

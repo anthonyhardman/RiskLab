@@ -11,5 +11,7 @@ namespace Risk.Shared
         Task JoinConfirmation(string assignedName, string connectionId);
         Task ConfirmDeploy(string connectionId);
         Task GameStarting();
+        Task AskUserDeploy(string connectionId, Board board);
+
     }
 }

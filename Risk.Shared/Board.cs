@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Risk.Game;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Risk.Shared;
 
-namespace Risk.Game
+namespace Risk.Shared
 {
     public class Board
     {
@@ -65,7 +65,7 @@ namespace Risk.Game
             return (colDistance <= 1 && rowDistance <= 1) && (colDistance == 1 || rowDistance == 1);
         }
 
-        internal IEnumerable<BoardTerritory> AsBoardTerritoryList()
+        public IEnumerable<BoardTerritory> AsBoardTerritoryList()
         {
             return from t in Territories
                    select new BoardTerritory {

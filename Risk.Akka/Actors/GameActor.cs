@@ -33,6 +33,7 @@ namespace Risk.Akka.Actors
                 {
                     Become(Running);
                     Sender.Tell(new GameStartingMessage());
+                    Sender.Tell(new TellUserDeployMessage(game.CurrentPlayer, game.Board));
                 }
                 else
                 {
