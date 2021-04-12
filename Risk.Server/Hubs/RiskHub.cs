@@ -39,6 +39,11 @@ namespace Risk.Server.Hubs
             await Clients.All.SendMessage(user, message);
         }
 
+        public async Task SendStatus(GameStatus status)
+        {
+            await Clients.All.SendStatus(status);
+        }
+
         public async Task AskUserDeploy(string connectionId, Board board)
         {
             await Clients.Client(connectionId).YourTurnToDeploy(board.SerializableTerritories);

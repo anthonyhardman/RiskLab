@@ -26,4 +26,5 @@ namespace Risk.Akka
     public record InvalidPlayerRequestMessage;
     public record TellUserDeployMessage(IActorRef Player, Board Board);
     public record TellUserAttackMessage(IActorRef Player, Board Board);
+    public record GameStatusMessage(GameStatus Status);
 }

@@ -76,6 +76,7 @@ namespace Risk.Akka.Actors
                     Sender.Tell(new BadDeployRequest(msg.Player));
                     Log.Info($"{msg.Player} failed to deploy to {msg.To}");
                 }
+                Sender.Tell(new GameStatusMessage(game.GetGameStatus()));
             });
         }
 

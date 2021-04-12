@@ -68,6 +68,11 @@ namespace Risk.Akka.Actors
                 //riskIOBridge.
             });
 
+            Receive<GameStatusMessage>(msg =>
+            {
+                riskIOBridge.SendGameStatus(msg.Status);
+            });
+
             Receive<StartGameMessage>(msg =>
             {
                 gameActor.Tell(new PlayerStartingGameMessage(msg.SecretCode, players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key));
