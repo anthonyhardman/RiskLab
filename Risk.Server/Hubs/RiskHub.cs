@@ -39,9 +39,9 @@ namespace Risk.Server.Hubs
             await Clients.All.SendMessage(user, message);
         }
 
-        internal Task AskUserDeploy(string connectionId, Board board)
+        public async Task AskUserDeploy(string connectionId, Board board)
         {
-            throw new NotImplementedException();
+            await Clients.Client(connectionId).YourTurnToDeploy(board.SerializableTerritories);
         }
 
         public async Task Signup(string requestedName)
@@ -76,52 +76,9 @@ namespace Risk.Server.Hubs
 
         public async Task DeployRequest(Location l)
         {
-            //logger.LogInformation("Received DeployRequest from {connectionId}", Context.ConnectionId);
+            logger.LogInformation("Received DeployRequest from {connectionId}", Context.ConnectionId);
 
-            //if (Context.ConnectionId == currentPlayer.Token)
-            //{
-            //    if (currentPlayer.InvalidRequests >= MaxFailedTries)
-            //    {
-            //        logger.LogInformation("{currentPlayer} has too many invalid requests.  Booting from game.", currentPlayer);
-            //        await Clients.Client(Context.ConnectionId).SendMessage("Server", $"Too many bad requests. No risk for you");
-            //        game.RemovePlayerByToken(currentPlayer.Token);
-            //        game.RemovePlayerFromBoard(currentPlayer.Token);
-            //        await tellNextPlayerToDeploy();
-            //        return;
-            //    }
-
-            //    if (game.TryPlaceArmy(Context.ConnectionId, l))
-            //    {
-            //        await Clients.All.SendStatus(game.GetGameStatus());
-            //        await Clients.Client(Context.ConnectionId).SendMessage("Server", $"Successfully Deployed At {l.Row}, {l.Column}");
-            //        logger.LogInformation("{currentPlayer} deployed at {l}", currentPlayer, l);
-
-            //        if (game.GameState == GameState.Deploying)
-            //        {
-            //            logger.LogInformation("Telling next player to deploy.");
-            //            await tellNextPlayerToDeploy();
-            //        }
-            //        else
-            //        {
-            //            logger.LogInformation("All armies that can be deployed have been deployed.  Beginning attack state.");
-            //            await StartAttackPhase();
-            //        }
-            //    }
-            //    else
-            //    {
-            //        logger.LogInformation("{currentPlayer} tried to deploy at {l} but deploy failed.  Increasing invalid requests.", currentPlayer, l);
-            //        await Clients.Client(Context.ConnectionId).SendMessage("Server", "Did not deploy successfully");
-            //        currentPlayer.InvalidRequests++;
-            //        await Clients.Client(currentPlayer.Token).YourTurnToDeploy(game.Board.SerializableTerritories);
-            //    }
-            //}
-            //else
-            //{
-            //    var badPlayer = game.Players.Single(p => p.Token == Context.ConnectionId) as Player;
-            //    badPlayer.InvalidRequests++;
-            //    await Clients.Client(badPlayer.Token).SendMessage("Server", "It's not your turn");
-            //    logger.LogInformation("{currentPlayer} tried to deploy when it wasn't their turn.  Increading invalid request count.", currentPlayer);
-            //}
+            IOActor.Tell(new BridgeDeployMessage(l, Context.ConnectionId));
         }
 
         private async Task tellNextPlayerToDeploy()

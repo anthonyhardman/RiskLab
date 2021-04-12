@@ -19,9 +19,11 @@ namespace Risk.Akka
     public record StartGameMessage(string SecretCode, string ConnectionId);
     public record PlayerStartingGameMessage(string SecretCode, IActorRef Actor);
     public record UnableToJoinMessage;
-    public record DeployMessage(Location To, string ConnectionId);
-    public record GameDeployMessage(Location To, string ConnectionId);
+    public record BridgeDeployMessage(Location To, string ConnectionId);
+    public record DeployMessage(Location To, IActorRef Player);
     public record ConfirmDeployMessage();
+    public record BadDeployRequest(IActorRef Player);
     public record InvalidPlayerRequestMessage;
     public record TellUserDeployMessage(IActorRef Player, Board Board);
+    public record TellUserAttackMessage(IActorRef Player, Board Board);
 }

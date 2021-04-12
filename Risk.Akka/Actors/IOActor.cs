@@ -52,10 +52,15 @@ namespace Risk.Akka.Actors
                 players.Remove(Sender);
             });
 
-            Receive<DeployMessage>(msg =>
+            Receive<BridgeDeployMessage>(msg =>
             {
-                var deployedPlayer = players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key;
-                deployedPlayer.Tell(msg);
+                var player = players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key;
+                gameActor.Tell(new DeployMessage(msg.To, player));
+            });
+
+            Receive<BadDeployRequest>(msg =>
+            {
+                riskIOBridge.BadDeployRequest(players[msg.Player]);
             });
 
             Receive<ConfirmDeployMessage>(msg =>

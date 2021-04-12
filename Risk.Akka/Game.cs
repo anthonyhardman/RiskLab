@@ -56,6 +56,7 @@ namespace Risk.Game
         public void StartGame()
         {
             Players.Shuffle();
+            CurrentPlayer = Players[0];
             gameState = GameState.Deploying;
         }
 
@@ -290,6 +291,12 @@ namespace Risk.Game
             defendingTerritory.Owner = attackingTerritory.Owner;
             defendingTerritory.Armies = attackingTerritory.Armies - 1;
             attackingTerritory.Armies -= defendingTerritory.Armies;
+        }
+
+        public IActorRef NextPlayer()
+        {
+            CurrentPlayer = Players[(Players.IndexOf(CurrentPlayer) + 1) % Players.Count];
+            return CurrentPlayer;
         }
     }
 }

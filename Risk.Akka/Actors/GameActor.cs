@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Text;
 using Risk.Game;
 using System.Linq;
+using Akka.Event;
 
 namespace Risk.Akka.Actors
 {
     public class GameActor : ReceiveActor
     {
+        public ILoggingAdapter Log { get; } = Context.GetLogger();
         private string secretCode { get; set; }
         private Risk.Game.Game game { get; set; }
         public GameActor(string secretCode, GameStartOptions startOptions)
@@ -31,7 +33,8 @@ namespace Risk.Akka.Actors
             {
                 if(secretCode == msg.SecretCode)
                 {
-                    Become(Running);
+                    Become(Deploying);
+                    game.StartGame();
                     Sender.Tell(new GameStartingMessage());
                     Sender.Tell(new TellUserDeployMessage(game.CurrentPlayer, game.Board));
                 }
@@ -43,29 +46,45 @@ namespace Risk.Akka.Actors
             });
         }
 
-        public void Running()
+        public void Deploying()
         {
             Receive<JoinGameMessage>(_ =>
             {
                 Sender.Tell(new UnableToJoinMessage());
             });
 
-            Receive<GameDeployMessage>(msg =>
+            Receive<DeployMessage>(msg =>
             {
-                if (isNotCurrentPlayer(Sender))
-                {
-                    //send bad player actor an invalid request message
-                    //send unable to deploy message to player
-                    return;
-                }
-                if (game.TryPlaceArmy(Sender, msg.To))
+                if (isCurrentPlayer(msg.Player) && game.TryPlaceArmy(msg.Player, msg.To))
                 {
                     Sender.Tell(new ConfirmDeployMessage());
+                    Log.Info($"{msg.Player} successfully deployed to {msg.To}");
+                    var nextPlayer = game.NextPlayer();
+                    if(game.GameState == GameState.Deploying)
+                    {
+                        Sender.Tell(new TellUserDeployMessage(nextPlayer, game.Board));
+                    }
+                    else
+                    {
+                        Become(Attacking);
+                        Sender.Tell(new TellUserAttackMessage(nextPlayer, game.Board));
+                    }
+                }
+                else
+                {
+                    msg.Player.Tell(new InvalidPlayerRequestMessage());
+                    Sender.Tell(new BadDeployRequest(msg.Player));
+                    Log.Info($"{msg.Player} failed to deploy to {msg.To}");
                 }
             });
         }
 
-        private bool isNotCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer != CurrentPlayer;
+        public void Attacking()
+        {
+
+        }
+
+        private bool isCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer == CurrentPlayer;
 
 
         
