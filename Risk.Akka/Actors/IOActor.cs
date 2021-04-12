@@ -62,6 +62,16 @@ namespace Risk.Akka.Actors
             {
                 //riskIOBridge.
             });
+
+            Receive<StartGameMessage>(msg =>
+            {
+                gameActor.Tell(new PlayerStartingGameMessage(msg.SecretCode, players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key));
+            });
+
+            Receive<GameStartingMessage>(msg =>
+            {
+                riskIOBridge.GameStarting();
+            });
         }
 
         private string AssignName(string requestedName)

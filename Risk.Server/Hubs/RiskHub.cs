@@ -18,6 +18,7 @@ namespace Risk.Server.Hubs
         private readonly ILogger<RiskHub> logger;
         private readonly IConfiguration config;
         private readonly ActorSystem actorSystem;
+        private readonly ActorSelection IOActor;
 
 
         public RiskHub(ILogger<RiskHub> logger, IConfiguration config, ActorSystem actorSystem)
@@ -25,6 +26,7 @@ namespace Risk.Server.Hubs
             this.logger = logger;
             this.config = config;
             this.actorSystem = actorSystem;
+            IOActor = actorSystem.ActorSelection(Path(ActorNames.IO));
         }
         public override async Task OnConnectedAsync()
         {
@@ -40,11 +42,12 @@ namespace Risk.Server.Hubs
         public async Task Signup(string requestedName)
         {
             await Task.FromResult(false);
-            actorSystem.ActorSelection(Path(ActorNames.IO)).Tell(new SignupMessage(requestedName, Context.ConnectionId));
+            IOActor.Tell(new SignupMessage(requestedName, Context.ConnectionId));
         }
 
         private async Task BroadCastMessage(string message)
         {
+            await Task.FromResult(false);
             await Clients.All.SendMessage("Server", message);
         }
 
@@ -56,16 +59,7 @@ namespace Risk.Server.Hubs
 
         public async Task StartGame(string Password)
         {
-            //if (Password == config["StartGameCode"])
-            //{
-            //    await BroadCastMessage("The Game has started");
-            //    game.StartGame();
-            //    await StartDeployPhase();
-            //}
-            //else
-            //{
-            //    await Clients.Client(Context.ConnectionId).SendMessage("Server", "Incorrect password");
-            //}
+            IOActor.Tell(new StartGameMessage(Password, Context.ConnectionId));
         }
         private async Task StartDeployPhase()
         {
@@ -279,6 +273,11 @@ namespace Risk.Server.Hubs
         public async Task ConfirmDeploy(string connectionId)
         {
             await Clients.Client(connectionId).SendMessage("Server", "Successfully Deployed");
+        }
+
+        public async Task AnnounceStartGame()
+        {
+            await BroadCastMessage("Game has started");
         }
     }
 }

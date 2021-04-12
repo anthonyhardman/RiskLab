@@ -10,12 +10,14 @@ namespace Risk.Akka.Actors
     public class PlayerActor : ReceiveActor
     {
         private readonly string connectionId;
+        public int invalidRequests { get; set; }
 
         public string AssignedName { get; set; }
         public PlayerActor(string assignedName, string connectionId)
         {
             this.AssignedName = assignedName;
-            this.connectionId = connectionId; 
+            this.connectionId = connectionId;
+            this.invalidRequests = 0;
             Become(Joining);
         }
 
@@ -30,6 +32,11 @@ namespace Risk.Akka.Actors
             Receive<NoGameResponse>(msg =>
             {
                 Context.Parent.Tell(new UnableToJoinMessage());
+            });
+
+            Receive<InvalidPlayerRequestMessage>(msg =>
+            {
+                this.invalidRequests += 1;
             });
         }
 
@@ -48,6 +55,11 @@ namespace Risk.Akka.Actors
             Receive<ConfirmDeployMessage>(msg =>
             {
                 Context.Parent.Forward(msg);
+            });
+
+            Receive<InvalidPlayerRequestMessage>(msg =>
+            {
+                this.invalidRequests += 1;
             });
 
         }

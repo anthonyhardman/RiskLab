@@ -10,5 +10,6 @@ namespace Risk.Shared
         Task JoinFailed(string connectionId);
         Task JoinConfirmation(string assignedName, string connectionId);
         Task ConfirmDeploy(string connectionId);
+        Task GameStarting();
     }
 }

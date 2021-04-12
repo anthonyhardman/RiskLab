@@ -30,5 +30,10 @@ namespace Risk.Server
         {
             await riskHub.ConfirmDeploy(connectionId);
         }
+
+        public async Task GameStarting()
+        {
+            await riskHub.AnnounceStartGame();
+        }
     }
 }

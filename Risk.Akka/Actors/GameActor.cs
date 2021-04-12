@@ -27,7 +27,7 @@ namespace Risk.Akka.Actors
                 game.AssignedNames.Add(msg.Actor, msg.AssignedName);
             });
 
-            Receive<StartGameMessage>(msg =>
+            Receive<PlayerStartingGameMessage>(msg =>
             {
                 if(secretCode == msg.SecretCode)
                 {
@@ -36,6 +36,7 @@ namespace Risk.Akka.Actors
                 }
                 else
                 {
+                    msg.Actor.Tell(new InvalidPlayerRequestMessage());
                     Sender.Tell(new CannotStartGameMessage());
                 }
             });
