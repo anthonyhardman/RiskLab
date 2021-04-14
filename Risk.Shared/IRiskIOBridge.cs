@@ -15,5 +15,6 @@ namespace Risk.Shared
         Task BadDeployRequest(string connectionId);
         Task SendGameStatus(GameStatus status);
         Task AskUserAttack(string connectionId, Board board);
+        Task SendChatMessage(string connectionId, string messageText);
     }
 }

@@ -59,5 +59,10 @@ namespace Risk.Server
         {
             await riskHub.AskUserAttack(connectionId, board);
         }
+
+        public async Task SendChatMessage(string connectionId, string messageText)
+        {
+            await riskHub.SendMessage(connectionId, messageText);
+        }
     }
 }

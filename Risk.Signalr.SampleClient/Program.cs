@@ -14,6 +14,10 @@ namespace Risk.Signalr.SampleClient
     {
         public static async Task Main(string[] args)
         {
+            foreach(var arg in args)
+            {
+                Console.WriteLine(arg);
+            }
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 

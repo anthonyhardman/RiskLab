@@ -104,6 +104,11 @@ namespace Risk.Akka.Actors
             {
                 riskIOBridge.AskUserAttack(players[msg.Player], msg.Board);
             });
+
+            Receive<ChatMessage>(msg =>
+            {
+                riskIOBridge.SendChatMessage(players[msg.Player], msg.MessageText);
+            });
         }
 
         private string AssignName(string requestedName)

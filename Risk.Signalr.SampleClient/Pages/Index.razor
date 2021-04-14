@@ -99,6 +99,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine(ServerAddress);
+        Console.WriteLine(config["ServerAddress"]);
+        ServerAddress = ServerAddress ?? config["ServerAddress"];
+        
         Console.WriteLine("Server Address is " + ServerAddress);
         hubConnection = new HubConnectionBuilder()
             .WithUrl("http://"+ServerAddress + "/riskhub")

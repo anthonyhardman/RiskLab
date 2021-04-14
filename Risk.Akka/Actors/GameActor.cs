@@ -91,7 +91,7 @@ namespace Risk.Akka.Actors
                 else
                 {
                     msg.Player.Tell(new InvalidPlayerRequestMessage());
-                    Sender.Tell(new BadDeployRequest(msg.Player));
+                    Sender.Tell(new BadAttackRequest(msg.Player));
                 }
             });
 
@@ -99,21 +99,81 @@ namespace Risk.Akka.Actors
             {
                 if (isCurrentPlayer(msg.Player))
                 {
-                    if(game.Players.Count == 1)
+                    if(game.Players.Count <= 1 || game.Players.Any(p => game.PlayerCanAttack(p)) is false)
                     {
+                        Log.Info("Ending Game. Player count = " + game.Players.Count + ";");
                         Sender.Tell(new GameOverMessage());
+                        return;
                     }
 
-                    if (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
+                    if (game.PlayerCanAttack(msg.Player))
                     {
-                        if (game.PlayerCanAttack(msg.Player))
+                        TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
+                        Territory attackingTerritory = null;
+                        Territory defendingTerritory = null;
+                        try
                         {
+                            attackingTerritory = game.Board.GetTerritory(msg.Attacking);
+                            defendingTerritory = game.Board.GetTerritory(msg.Defending);
 
+                            Log.Info($"{msg.Player} wants to attack from {attackingTerritory} to {defendingTerritory}");
+
+                            attackResult = game.TryAttack(msg.Player, attackingTerritory, defendingTerritory);
+                            Sender.Tell(new GameStatusMessage(game.GetGameStatus()));
+                        }
+                        catch (Exception ex)
+                        {
+                            attackResult = new TryAttackResult { AttackInvalid = true, Message = ex.Message };
+                        }
+                        if (attackResult.AttackInvalid)
+                        {
+                            msg.Player.Tell(new InvalidPlayerRequestMessage());
+                            Log.Error($"Invalid attack request! {msg.Player} from {attackingTerritory} to {defendingTerritory}.");
+                            Sender.Tell(new ChatMessage(msg.Player, $"Invalid attack request: {attackResult.Message} :("));
+                            Sender.Tell(new TellUserAttackMessage(msg.Player, game.Board));
+                        }
+                        else
+                        {
+                            Sender.Tell(new ChatMessage(msg.Player, $"Successfully Attacked From ({msg.Attacking.Row}, {msg.Attacking.Column}) To ({msg.Defending.Row}, {msg.Defending.Column})"));
+                            if (game.GameState == GameState.Attacking)
+                            {
+                                if (game.PlayerCanAttack(msg.Player))
+                                {
+                                    Sender.Tell(new TellUserAttackMessage(msg.Player, game.Board));
+                                }
+                                else
+                                    Sender.Tell(new TellUserAttackMessage(game.NextPlayer(), game.Board));
+                            }
+                            else
+                            {
+                                Sender.Tell(new GameOverMessage());
+                            }
                         }
                     }
-
+                    else
+                    {
+                        Log.Error("Player tried to attack when they couldn't attack");
+                        Sender.Tell(new TellUserAttackMessage(game.NextPlayer(), game.Board));
+                    }
+                }
+                else
+                {
+                    msg.Player.Tell(new InvalidPlayerRequestMessage());
+                    Sender.Tell(new BadAttackRequest(msg.Player));
                 }
             });
+
+
+        }
+
+        private void sendGameOverAsync(IActorRef)
+        {
+            game.SetGameOver();
+            var status = game.GetGameStatus();
+            Log.Info("Game Over.\n\n{gameStatus}", status);
+            var winners = status.PlayerStats.Where(s => s.Score == status.PlayerStats.Max(s => s.Score)).Select(s => s.Name);
+             BroadCastMessageAsync($"Game Over - {string.Join(',', winners)} win{(winners.Count() > 1 ? "" : "s")}!");
+            await Clients.All.SendStatus(getStatus());
         }
 
         private bool isCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer == CurrentPlayer;

@@ -113,84 +113,8 @@ namespace Risk.Server.Hubs
 
         public async Task AttackRequest(Location from, Location to)
         {
-            //if (Context.ConnectionId == currentPlayer.Token)
-            //{
-            //    game.OutstandingAttackRequestCount--;
-
-            //    if (currentPlayer.InvalidRequests >= MaxFailedTries)
-            //    {
-            //        await Clients.Client(Context.ConnectionId).SendMessage("Server", $"Too many bad requests. No risk for you");
-            //        game.RemovePlayerByToken(currentPlayer.Token);
-            //        game.RemovePlayerFromBoard(currentPlayer.Token);
-            //        await tellNextPlayerToAttack();
-            //        return;
-            //    }
-
-            //    if (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
-            //    {
-            //        if (game.PlayerCanAttack(currentPlayer))
-            //        {
-            //            TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
-            //            Territory attackingTerritory = null;
-            //            Territory defendingTerritory = null;
-            //            try
-            //            {
-            //                attackingTerritory = game.Board.GetTerritory(from);
-            //                defendingTerritory = game.Board.GetTerritory(to);
-
-            //                logger.LogInformation($"{currentPlayer.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
-
-            //                attackResult = game.TryAttack(currentPlayer.Token, attackingTerritory, defendingTerritory);
-            //                await Clients.All.SendStatus(game.GetGameStatus());
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                attackResult = new TryAttackResult { AttackInvalid = true, Message = ex.Message };
-            //            }
-            //            if (attackResult.AttackInvalid)
-            //            {
-            //                logger.LogError($"Invalid attack request! {currentPlayer.Name} from {attackingTerritory} to {defendingTerritory} ");
-            //                currentPlayer.InvalidRequests++;
-            //                await Clients.Client(currentPlayer.Token).YourTurnToAttack(game.Board.SerializableTerritories);
-
-            //            }
-            //            else
-            //            {
-            //                await Clients.Client(Context.ConnectionId).SendMessage("Server", $"Successfully Attacked From ({from.Row}, {from.Column}) To ({to.Row}, {to.Column})");
-
-            //                if (game.GameState == GameState.Attacking)
-            //                {
-            //                    if (game.PlayerCanAttack(currentPlayer))
-            //                    {
-            //                        await Clients.Client(currentPlayer.Token).YourTurnToAttack(game.Board.SerializableTerritories);
-            //                    }
-            //                    else
-            //                        await tellNextPlayerToAttack();
-            //                }
-            //                else
-            //                {
-            //                    await sendGameOverAsync();
-            //                }
-            //            }
-            //        }
-            //        else
-            //        {
-            //            await Clients.Client(currentPlayer.Token).SendMessage("Server", "You are unable to attack.  Moving to next player.");
-            //            logger.LogInformation("Player {currentPlayer} cannot attack.", currentPlayer);
-            //            await tellNextPlayerToAttack();
-            //        }
-            //    }
-            //    else
-            //    {
-            //        await sendGameOverAsync();
-            //    }
-            //}
-            //else
-            //{
-            //    var badPlayer = game.Players.Single(p => p.Token == Context.ConnectionId) as Player;
-            //    badPlayer.InvalidRequests++;
-            //    await Clients.Client(badPlayer.Token).SendMessage("Server", "It's not your turn");
-            //}
+            await Task.FromResult(false);
+            IOActor.Tell(new BridgeAttackMessage(to, from, Context.ConnectionId));
         }
 
         
