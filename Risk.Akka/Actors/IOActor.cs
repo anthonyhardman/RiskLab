@@ -63,6 +63,18 @@ namespace Risk.Akka.Actors
                 riskIOBridge.BadDeployRequest(players[msg.Player]);
             });
 
+            Receive<BridgeAttackMessage>(msg =>
+            {
+                var player = players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key;
+                gameActor.Tell(new AttackMessage(msg.Defending, msg.Attacking, player));
+            });
+
+            Receive<BridgeCeaseAttackingMessage>(msg =>
+            {
+                var player = players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key;
+                gameActor.Tell(new CeaseAttackingMessage(player));
+            });
+
             Receive<ConfirmDeployMessage>(msg =>
             {
                 //riskIOBridge.

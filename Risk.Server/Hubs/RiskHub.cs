@@ -192,7 +192,8 @@ namespace Risk.Server.Hubs
 
         public async Task AttackComplete()
         {
-            //await tellNextPlayerToAttack();
+            await Task.FromResult(false);
+            IOActor.Tell(new BridgeCeaseAttackingMessage(Context.ConnectionId));
         }
 
         private async Task tellNextPlayerToAttack()

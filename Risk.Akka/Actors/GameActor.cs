@@ -82,7 +82,38 @@ namespace Risk.Akka.Actors
 
         public void Attacking()
         {
+            Receive<CeaseAttackingMessage>(msg =>
+            {
+                if (isCurrentPlayer(msg.Player))
+                {
+                    Sender.Tell(new TellUserAttackMessage(game.NextPlayer(), game.Board));
+                }
+                else
+                {
+                    msg.Player.Tell(new InvalidPlayerRequestMessage());
+                    Sender.Tell(new BadDeployRequest(msg.Player));
+                }
+            });
 
+            Receive<AttackMessage>(msg =>
+            {
+                if (isCurrentPlayer(msg.Player))
+                {
+                    if(game.Players.Count == 1)
+                    {
+                        Sender.Tell(new GameOverMessage());
+                    }
+
+                    if (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
+                    {
+                        if (game.PlayerCanAttack(msg.Player))
+                        {
+
+                        }
+                    }
+
+                }
+            });
         }
 
         private bool isCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer == CurrentPlayer;
