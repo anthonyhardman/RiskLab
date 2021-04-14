@@ -99,6 +99,11 @@ namespace Risk.Akka.Actors
             {
                 riskIOBridge.AskUserDeploy(players[msg.Player], msg.Board);
             });
+
+            Receive<TellUserAttackMessage>(msg =>
+            {
+                riskIOBridge.AskUserAttack(players[msg.Player], msg.Board);
+            });
         }
 
         private string AssignName(string requestedName)

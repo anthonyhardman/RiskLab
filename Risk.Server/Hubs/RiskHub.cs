@@ -61,6 +61,11 @@ namespace Risk.Server.Hubs
             await Clients.All.SendMessage("Server", message);
         }
 
+        public async Task AskUserAttack(string connectionId, Board board)
+        {
+            await Clients.Client(connectionId).YourTurnToAttack(board.SerializableTerritories);
+        }
+
         public async Task GetStatus()
         {
             //await Clients.Client(Context.ConnectionId).SendMessage("Server", game.GameState.ToString());

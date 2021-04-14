@@ -54,5 +54,10 @@ namespace Risk.Server
         {
             await riskHub.SendStatus(status);
         }
+
+        public async Task AskUserAttack(string connectionId, Board board)
+        {
+            await riskHub.AskUserAttack(connectionId, board);
+        }
     }
 }
