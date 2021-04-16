@@ -145,14 +145,11 @@ namespace Risk.Server.Hubs
             //await Clients.Client(currentPlayer.Token).YourTurnToAttack(game.Board.SerializableTerritories);
         }
 
-        private async Task sendGameOverAsync()
+        public async Task SendGameOverAsync(GameStatus gameStatus)
         {
-            //game.SetGameOver();
-            //var status = game.GetGameStatus();
-            //logger.LogInformation("Game Over. {gameStatus}", status);
-            //var winners = status.PlayerStats.Where(s => s.Score == status.PlayerStats.Max(s => s.Score)).Select(s => s.Name);
-            //await BroadCastMessage($"Game Over - {string.Join(',', winners)} win{(winners.Count() > 1 ? "" : "s")}!");
-            //await Clients.All.SendStatus(game.GetGameStatus());
+            var winners = gameStatus.PlayerStats.Where(s => s.Score == gameStatus.PlayerStats.Max(s => s.Score)).Select(s => s.Name);
+            await Clients.All.SendStatus(gameStatus);
+            await BroadCastMessage($"Game Over - {string.Join(',', winners)} win{(winners.Count() > 1 ? "" : "s")}!");
         }
 
         public async Task JoinFailed(string connectionId)

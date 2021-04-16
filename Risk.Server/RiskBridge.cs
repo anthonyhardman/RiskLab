@@ -64,5 +64,10 @@ namespace Risk.Server
         {
             await riskHub.SendMessage(connectionId, messageText);
         }
+
+        public async Task GameOver(GameStatus gameStatus)
+        {
+            await riskHub.SendGameOverAsync(gameStatus);
+        }
     }
 }

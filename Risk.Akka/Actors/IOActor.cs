@@ -109,6 +109,11 @@ namespace Risk.Akka.Actors
             {
                 riskIOBridge.SendChatMessage(players[msg.Player], msg.MessageText);
             });
+
+            Receive<GameOverMessage>(msg =>
+            {
+                riskIOBridge.GameOver(msg.gameStatus);
+            });
         }
 
         private string AssignName(string requestedName)

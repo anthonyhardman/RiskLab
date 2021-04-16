@@ -32,6 +32,6 @@ namespace Risk.Akka
     public record TellUserDeployMessage(IActorRef Player, Board Board);
     public record TellUserAttackMessage(IActorRef Player, Board Board);
     public record GameStatusMessage(GameStatus Status);
-    public record GameOverMessage();
+    public record GameOverMessage(GameStatus gameStatus);
     public record ChatMessage(IActorRef Player, string MessageText);
 }

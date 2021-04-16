@@ -16,5 +16,6 @@ namespace Risk.Shared
         Task SendGameStatus(GameStatus status);
         Task AskUserAttack(string connectionId, Board board);
         Task SendChatMessage(string connectionId, string messageText);
+        Task GameOver(GameStatus gameStatus);
     }
 }

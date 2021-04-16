@@ -102,7 +102,7 @@ namespace Risk.Akka.Actors
                     if(game.Players.Count <= 1 || game.Players.Any(p => game.PlayerCanAttack(p)) is false)
                     {
                         Log.Info("Ending Game. Player count = " + game.Players.Count + ";");
-                        Sender.Tell(new GameOverMessage());
+                        Sender.Tell(new GameOverMessage(game.GetGameStatus()));
                         return;
                     }
 
@@ -146,7 +146,7 @@ namespace Risk.Akka.Actors
                             }
                             else
                             {
-                                Sender.Tell(new GameOverMessage());
+                                Sender.Tell(new GameOverMessage(game.GetGameStatus()));
                             }
                         }
                     }
@@ -166,15 +166,15 @@ namespace Risk.Akka.Actors
 
         }
 
-        private void sendGameOverAsync(IActorRef)
-        {
-            game.SetGameOver();
-            var status = game.GetGameStatus();
-            Log.Info("Game Over.\n\n{gameStatus}", status);
-            var winners = status.PlayerStats.Where(s => s.Score == status.PlayerStats.Max(s => s.Score)).Select(s => s.Name);
-             BroadCastMessageAsync($"Game Over - {string.Join(',', winners)} win{(winners.Count() > 1 ? "" : "s")}!");
-            await Clients.All.SendStatus(getStatus());
-        }
+        //private void sendGameOverAsync(IActorRef)
+        //{
+        //    game.SetGameOver();
+        //    var status = game.GetGameStatus();
+        //    Log.Info("Game Over.\n\n{gameStatus}", status);
+        //    var winners = status.PlayerStats.Where(s => s.Score == status.PlayerStats.Max(s => s.Score)).Select(s => s.Name);
+        //     BroadCastMessageAsync($"Game Over - {string.Join(',', winners)} win{(winners.Count() > 1 ? "" : "s")}!");
+        //    await Clients.All.SendStatus(getStatus());
+        //}
 
         private bool isCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer == CurrentPlayer;
 
