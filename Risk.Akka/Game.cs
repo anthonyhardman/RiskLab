@@ -158,7 +158,7 @@ namespace Risk.Game
                               select AssignedNames[p];
 
             var playerStats = from p in Players
-                              let territories = Board.Territories.Where(t => t.Owner == p.Path.Name)
+                              let territories = Board.Territories.Where(t => t.Owner == AssignedNames[p])
                               let armies = territories.Sum(t => t.Armies)
                               let territoryCount = territories.Count()
                               select new PlayerStats {
