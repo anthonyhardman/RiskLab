@@ -101,6 +101,7 @@ namespace Risk.Akka.Actors
                 {
                     if(game.Players.Count <= 1 || game.Players.Any(p => game.PlayerCanAttack(p)) is false)
                     {
+                        game.SetGameOver();
                         Log.Info("Ending Game. Player count = " + game.Players.Count + ";");
                         Sender.Tell(new GameOverMessage(game.GetGameStatus()));
                         return;
@@ -146,6 +147,7 @@ namespace Risk.Akka.Actors
                             }
                             else
                             {
+                                game.SetGameOver();
                                 Sender.Tell(new GameOverMessage(game.GetGameStatus()));
                             }
                         }
