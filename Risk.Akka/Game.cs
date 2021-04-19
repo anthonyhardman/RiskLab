@@ -105,8 +105,9 @@ namespace Risk.Game
             return placeResult;
         }
 
-        public void RemovePlayerFromBoard(IActorRef player)
+        public void RemovePlayerFromGame(IActorRef player)
         {
+            Players.Remove(player);
             foreach (Territory territory in Board.Territories)
             {
                 if (territory.Owner == playerName(player))

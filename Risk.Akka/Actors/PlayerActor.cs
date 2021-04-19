@@ -29,7 +29,7 @@ namespace Risk.Akka.Actors
                 this.invalidRequests += 1;
                 if(invalidRequests > MaxInvalidRequests)
                 {
-                    //tell game object to kick player out
+                    Sender.Tell(new TooManyInvalidRequestsMessage());
                 }
             });
         }

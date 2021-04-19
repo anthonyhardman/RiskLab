@@ -34,4 +34,5 @@ namespace Risk.Akka
     public record GameStatusMessage(GameStatus Status);
     public record GameOverMessage(GameStatus gameStatus);
     public record ChatMessage(IActorRef Player, string MessageText);
+    public record TooManyInvalidRequestsMessage();
 }

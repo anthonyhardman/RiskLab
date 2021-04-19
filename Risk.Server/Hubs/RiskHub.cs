@@ -66,21 +66,9 @@ namespace Risk.Server.Hubs
             await Clients.Client(connectionId).YourTurnToAttack(board.SerializableTerritories);
         }
 
-        public async Task GetStatus()
-        {
-            //await Clients.Client(Context.ConnectionId).SendMessage("Server", game.GameState.ToString());
-            //await Clients.Client(Context.ConnectionId).SendStatus(game.GetGameStatus());
-        }
-
         public async Task StartGame(string Password)
         {
             IOActor.Tell(new StartGameMessage(Password, Context.ConnectionId));
-        }
-        private async Task StartDeployPhase()
-        {
-            //game.CurrentPlayer = game.Players.First();
-
-            //await Clients.Client(currentPlayer.Token).YourTurnToDeploy(game.Board.SerializableTerritories);
         }
 
 
@@ -89,26 +77,6 @@ namespace Risk.Server.Hubs
             logger.LogInformation("Received DeployRequest from {connectionId}", Context.ConnectionId);
 
             IOActor.Tell(new BridgeDeployMessage(l, Context.ConnectionId));
-        }
-
-        private async Task tellNextPlayerToDeploy()
-        {
-            //var players = game.Players.ToList();
-            //var currentPlayerIndex = players.IndexOf(game.CurrentPlayer);
-            //var nextPlayerIndex = currentPlayerIndex + 1;
-            //if (nextPlayerIndex >= players.Count)
-            //{
-            //    nextPlayerIndex = 0;
-            //}
-            //game.CurrentPlayer = players[nextPlayerIndex];
-            //await Clients.Client(currentPlayer.Token).YourTurnToDeploy(game.Board.SerializableTerritories);
-        }
-
-        private async Task StartAttackPhase()
-        {
-            //game.CurrentPlayer = game.Players.First();
-
-            //await Clients.Client(currentPlayer.Token).YourTurnToAttack(game.Board.SerializableTerritories);
         }
 
         public async Task AttackRequest(Location from, Location to)
@@ -123,26 +91,6 @@ namespace Risk.Server.Hubs
         {
             await Task.FromResult(false);
             IOActor.Tell(new BridgeCeaseAttackingMessage(Context.ConnectionId));
-        }
-
-        private async Task tellNextPlayerToAttack()
-        {
-            //var players = game.Players.ToList();
-            //if (game.OutstandingAttackRequestCount >= players.Count * Game.Game.MaxTimesAPlayerCanNotAttack)
-            //{
-            //    logger.LogInformation("Too many plays skipped attacking, ending game");
-            //    await sendGameOverAsync();
-            //    return;
-            //}
-            //game.OutstandingAttackRequestCount++;
-            //var currentPlayerIndex = players.IndexOf(game.CurrentPlayer);
-            //var nextPlayerIndex = currentPlayerIndex + 1;
-            //if (nextPlayerIndex >= players.Count)
-            //{
-            //    nextPlayerIndex = 0;
-            //}
-            //game.CurrentPlayer = players[nextPlayerIndex];
-            //await Clients.Client(currentPlayer.Token).YourTurnToAttack(game.Board.SerializableTerritories);
         }
 
         public async Task SendGameOverAsync(GameStatus gameStatus)

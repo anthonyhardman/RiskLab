@@ -165,18 +165,10 @@ namespace Risk.Akka.Actors
                 }
             });
 
-
+            Receive<TooManyInvalidRequestsMessage>(msg => {
+                game.RemovePlayerFromGame(Sender);
+            });
         }
-
-        //private void sendGameOverAsync(IActorRef)
-        //{
-        //    game.SetGameOver();
-        //    var status = game.GetGameStatus();
-        //    Log.Info("Game Over.\n\n{gameStatus}", status);
-        //    var winners = status.PlayerStats.Where(s => s.Score == status.PlayerStats.Max(s => s.Score)).Select(s => s.Name);
-        //     BroadCastMessageAsync($"Game Over - {string.Join(',', winners)} win{(winners.Count() > 1 ? "" : "s")}!");
-        //    await Clients.All.SendStatus(getStatus());
-        //}
 
         private bool isCurrentPlayer(IActorRef CurrentPlayer) => game.CurrentPlayer == CurrentPlayer;
 
