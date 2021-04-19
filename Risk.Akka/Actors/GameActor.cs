@@ -44,6 +44,11 @@ namespace Risk.Akka.Actors
                     Sender.Tell(new CannotStartGameMessage());
                 }
             });
+
+            Receive<TooManyInvalidRequestsMessage>(msg => {
+                game.RemovePlayerFromGame(msg.Player);
+                Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
+            });
         }
 
         public void Deploying()
@@ -77,6 +82,11 @@ namespace Risk.Akka.Actors
                     Log.Info($"{msg.Player} failed to deploy to {msg.To}");
                 }
                 Sender.Tell(new GameStatusMessage(game.GetGameStatus()));
+            });
+
+            Receive<TooManyInvalidRequestsMessage>(msg => {
+                game.RemovePlayerFromGame(msg.Player);
+                Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });
         }
 
@@ -166,7 +176,8 @@ namespace Risk.Akka.Actors
             });
 
             Receive<TooManyInvalidRequestsMessage>(msg => {
-                game.RemovePlayerFromGame(Sender);
+                game.RemovePlayerFromGame(msg.Player);
+                Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });
         }
 

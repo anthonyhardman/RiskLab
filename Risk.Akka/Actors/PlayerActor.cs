@@ -29,7 +29,7 @@ namespace Risk.Akka.Actors
                 this.invalidRequests += 1;
                 if(invalidRequests > MaxInvalidRequests)
                 {
-                    Sender.Tell(new TooManyInvalidRequestsMessage());
+                    Sender.Tell(new TooManyInvalidRequestsMessage(Context.Self));
                 }
             });
         }

@@ -114,6 +114,11 @@ namespace Risk.Akka.Actors
             {
                 riskIOBridge.GameOver(msg.gameStatus);
             });
+
+            Receive<TooManyInvalidRequestsMessage>(msg =>
+            {
+                riskIOBridge.SendChatMessage(players[msg.Player], "To many invalid requests, you've been kicked from the game.");
+            });
         }
 
         private string AssignName(string requestedName)
