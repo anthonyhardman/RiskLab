@@ -16,8 +16,8 @@ namespace Risk.Akka
     public record TellUserJoinedMessage(string AssignedName, string ConnectionId);
     public record NoGameResponse;
     public record SignupMessage(string RequestedName, string ConnectionId);
-    public record StartGameMessage(string SecretCode, string ConnectionId);
-    public record PlayerStartingGameMessage(string SecretCode, IActorRef Actor);
+    public record StartGameMessage(string SecretCode, GameStartOptions StartOptions, string ConnectionId);
+    public record PlayerStartingGameMessage(string SecretCode, GameStartOptions StartOptions, IActorRef Actor);
     public record UnableToJoinMessage;
     public record BridgeDeployMessage(Location To, string ConnectionId);
     public record BridgeAttackMessage(Location Defending, Location Attacking, string ConnectionId);
@@ -35,4 +35,6 @@ namespace Risk.Akka
     public record GameOverMessage(GameStatus gameStatus);
     public record ChatMessage(IActorRef Player, string MessageText);
     public record TooManyInvalidRequestsMessage(IActorRef Player);
+    public record ReinitializeGameMessage(string SecretCode);
+    
 }

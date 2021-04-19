@@ -86,7 +86,7 @@
 
 @code{
     [Parameter]
-    public string ServerAddress { get; set; } = "http://localhost:5000";
+    public string ServerAddress { get; set; } = "riskserver2.azurewebsites.net";
     private HubConnection hubConnection;
     private List<string> messages = new List<string>();
     private string userInput;
@@ -101,8 +101,9 @@
     {
         Console.WriteLine(ServerAddress);
         Console.WriteLine(config["ServerAddress"]);
-        ServerAddress = ServerAddress ?? config["ServerAddress"];
-        
+        ServerAddress = ServerAddress ?? config["ServerAddress"] ?? "riskserver2.azurewebsites.net";
+
+
         Console.WriteLine("Server Address is " + ServerAddress);
         hubConnection = new HubConnectionBuilder()
             .WithUrl("http://"+ServerAddress + "/riskhub")

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Risk.Signalr.ConsoleClient": {
+      "commandName": "Project",
+      "commandLineArgs": "https://riskserver2.azurewebsites.net"
+    }
+  }
+}

@@ -17,6 +17,7 @@ namespace Risk.Signalr.ConsoleClient
             var playerName = Console.ReadLine();
 
             var serverAddress = "http://localhost:5000";
+            
             if(args.Length == 1)
             {
                 serverAddress = args[0];

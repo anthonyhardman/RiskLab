@@ -114,6 +114,7 @@ namespace Risk.Akka.Actors
                         game.SetGameOver();
                         Log.Info("Ending Game. Player count = " + game.Players.Count + ";");
                         Sender.Tell(new GameOverMessage(game.GetGameStatus()));
+                        Become(GameOver);
                         return;
                     }
 
@@ -159,6 +160,7 @@ namespace Risk.Akka.Actors
                             {
                                 game.SetGameOver();
                                 Sender.Tell(new GameOverMessage(game.GetGameStatus()));
+                                Become(GameOver);
                             }
                         }
                     }
@@ -178,6 +180,18 @@ namespace Risk.Akka.Actors
             Receive<TooManyInvalidRequestsMessage>(msg => {
                 game.RemovePlayerFromGame(msg.Player);
                 Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
+            });
+        }
+
+        public void GameOver()
+        {
+            Receive<ReinitializeGameMessage>(msg =>
+            {
+                if(msg.SecretCode == secretCode)
+                {
+                    Log.Info("Reinitializing game");
+                    Become(Starting);
+                }
             });
         }
 

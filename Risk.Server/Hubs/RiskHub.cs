@@ -66,9 +66,9 @@ namespace Risk.Server.Hubs
             await Clients.Client(connectionId).YourTurnToAttack(board.SerializableTerritories);
         }
 
-        public async Task StartGame(string Password)
+        public async Task StartGame(string Password, GameStartOptions startOptions)
         {
-            IOActor.Tell(new StartGameMessage(Password, Context.ConnectionId));
+            IOActor.Tell(new StartGameMessage(Password, startOptions, Context.ConnectionId));
         }
 
 

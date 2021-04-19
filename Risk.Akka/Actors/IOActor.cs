@@ -87,7 +87,7 @@ namespace Risk.Akka.Actors
 
             Receive<StartGameMessage>(msg =>
             {
-                gameActor.Tell(new PlayerStartingGameMessage(msg.SecretCode, players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key));
+                gameActor.Tell(new PlayerStartingGameMessage(msg.SecretCode, msg.StartOptions, players.FirstOrDefault(x => x.Value == msg.ConnectionId).Key));
             });
 
             Receive<GameStartingMessage>(msg =>
