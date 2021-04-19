@@ -17,7 +17,6 @@ namespace Risk.Server
         public RiskBridge(IServiceProvider services)
         {
             this.services = services;
-            
         }
         public async Task JoinConfirmation(string assignedName, string connectionId)
         {
