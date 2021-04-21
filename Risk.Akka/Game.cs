@@ -10,12 +10,13 @@ namespace Risk.Game
     public class Game
     {
 
-        public Game(GameStartOptions startOptions)
+        public void InitializeGame(GameStartOptions startOptions)
         {
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
             gameState = GameState.Initializing;
         }
+
         public IActorRef CurrentPlayer { get; set; }
         public List<IActorRef> Players { get; } = new List<IActorRef>();
         public Dictionary<IActorRef, string> AssignedNames { get; } = new();
@@ -25,12 +26,12 @@ namespace Risk.Game
         public int numberOfCardTurnIns = 1;
         
 
-        public Board Board { get; }
+        public Board Board { get; private set; }
         private GameState gameState { get; set; }
 
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public int StartingArmies { get; }
+        public int StartingArmies { get; private set; }
         public GameState GameState => gameState;
 
         public const int MaxTimesAPlayerCanNotAttack = 5;

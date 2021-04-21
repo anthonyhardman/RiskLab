@@ -168,7 +168,7 @@
         await hubConnection.SendAsync(MessageTypes.Signup, userInput);
     }
     async Task GameStatusAsync() => await hubConnection.SendAsync(MessageTypes.GetStatus);
-    async Task StartGameAsync() => await hubConnection.SendAsync(MessageTypes.StartGame, secretCode);
+    async Task StartGameAsync() => await hubConnection.SendAsync(MessageTypes.StartGame, secretCode, new GameStartOptions() {StartingArmiesPerPlayer=50, Height=20, Width=20 });
     async Task DeployAsync(Location desiredLocation) => await hubConnection.SendAsync(MessageTypes.DeployRequest, desiredLocation);
     async Task AttackAsync(Location from, Location to) => await hubConnection.SendAsync(MessageTypes.AttackRequest, from, to);
     async Task AttackCompleteAsync() => await hubConnection.SendAsync(MessageTypes.AttackComplete);

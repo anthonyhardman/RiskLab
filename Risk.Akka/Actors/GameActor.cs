@@ -14,10 +14,10 @@ namespace Risk.Akka.Actors
         public ILoggingAdapter Log { get; } = Context.GetLogger();
         private string secretCode { get; set; }
         private Risk.Game.Game game { get; set; }
-        public GameActor(string secretCode, GameStartOptions startOptions)
+        public GameActor(string secretCode)
         {
             this.secretCode = secretCode;
-            game = new Game.Game(startOptions);
+            game = new Game.Game();
             Become(Starting);
         }
 
@@ -34,6 +34,7 @@ namespace Risk.Akka.Actors
                 if(secretCode == msg.SecretCode)
                 {
                     Become(Deploying);
+                    game.InitializeGame(msg.StartOptions);
                     game.StartGame();
                     Sender.Tell(new GameStartingMessage());
                     Sender.Tell(new TellUserDeployMessage(game.CurrentPlayer, game.Board));
