@@ -16,8 +16,7 @@ namespace Risk.Akka
     public record TellUserJoinedMessage(string AssignedName, string ConnectionId);
     public record NoGameResponse;
     public record SignupMessage(string RequestedName, string ConnectionId);
-    public record StartGameMessage(string SecretCode, GameStartOptions StartOptions, string ConnectionId);
-    public record PlayerStartingGameMessage(string SecretCode, GameStartOptions StartOptions, IActorRef Actor);
+    public record StartGameMessage(string SecretCode, GameStartOptions StartOptions);
     public record UnableToJoinMessage;
     public record BridgeDeployMessage(Location To, string ConnectionId);
     public record BridgeAttackMessage(Location Defending, Location Attacking, string ConnectionId);

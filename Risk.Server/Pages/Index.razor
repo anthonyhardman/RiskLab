@@ -1,0 +1,83 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Logging 
+@using Risk.Shared;
+@inject IConfiguration config
+
+<h3>Index</h3>
+
+@code {
+
+    public IEnumerable<PlayerStats> playerStats;
+    public GameStartOptions startOptions = new GameStartOptions()
+    {
+        Height = 10,
+        Width = 10,
+        StartingArmiesPerPlayer = 250
+    };
+    public string actionButtonText = "Start Game";
+    public string ServerAddress { get; set; }
+    private HubConnection hubConnection;
+    private List<string> messages = new List<string>();
+    private string userInput;
+    private string logMessages;
+    private string secretCode;
+    private GameStatus Status;
+    private int MaxRow = 0;
+    private int MaxCol = 0;
+    private bool savedSecretCode = false;
+    private bool showLog = false;
+    private string currentPlayerName = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ServerAddress = config["serverAddress"] ?? "localhost:5000";
+        if (config["alwaysUseFreshSecretCode"] != "true")
+        {
+            secretCode = "banana55";
+        }
+        userInput = "Built-In";
+
+        var connectionUrl = "http://" + ServerAddress;
+        if (ServerAddress.Contains("https://"))
+            connectionUrl = ServerAddress;
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(connectionUrl + "/riskhub")
+            .ConfigureLogging(logBuilder =>
+            {
+                logBuilder.AddDebug();
+            })
+            .Build();
+
+        hubConnection.On<string, string>(MessageTypes.SendMessage, (user, message) =>
+        {
+            var encodedMsg = $"{user}: {message}";
+            messages.Add(encodedMsg);
+            StateHasChanged();
+        });
+
+
+        hubConnection.On<GameStatus>(MessageTypes.SendStatus, status =>
+        {
+        Status = status;
+        MaxRow = status.Board.Max(t => t.Location.Row);
+        MaxCol = status.Board.Max(t => t.Location.Column);
+        if (Status.GameState == GameState.GameOver)
+        {
+            actionButtonText = "Restart Game";
+        }
+        else if (Status.GameState == GameState.Joining)
+        {
+            actionButtonText = "Start Game";
+            }
+            //currentPlayerName = status.CurrentPlayer;
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+
+        logMessages += "My connection id is " + hubConnection.ConnectionId;
+    }
+}

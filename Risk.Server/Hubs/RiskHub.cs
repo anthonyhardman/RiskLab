@@ -68,7 +68,7 @@ namespace Risk.Server.Hubs
 
         public async Task StartGame(string Password, GameStartOptions startOptions)
         {
-            IOActor.Tell(new StartGameMessage(Password, startOptions, Context.ConnectionId));
+            IOActor.Tell(new StartGameMessage(Password, startOptions));
         }
 
 
