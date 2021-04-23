@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Risk.Signalr.ConsoleClient
 {
-    public class PlayerLogic
+    public class PlayerLogic : IPlayerLogic
     {
-
         public PlayerLogic(string playerName)
         {
             MyPlayerName = playerName;
@@ -22,7 +22,7 @@ namespace Risk.Signalr.ConsoleClient
             return myTerritory.Location;
         }
 
-        public (Location to, Location from) WhereDoYouWantToAttack(IEnumerable<BoardTerritory> board)
+        public (Location from, Location to) WhereDoYouWantToAttack(IEnumerable<BoardTerritory> board)
         {
             foreach (var myTerritory in board.Where(t => t.OwnerName == MyPlayerName).OrderByDescending(t => t.Armies))
             {

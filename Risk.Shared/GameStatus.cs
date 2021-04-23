@@ -13,7 +13,7 @@ namespace Risk.Shared
         public Collection<PlayerStats> PlayerStats { get; set; }
         public GameState GameState { get; set; }
         public IEnumerable<BoardTerritory> Board { get; set; }
-        public string CurrentPlayerName { get; }
+        public string CurrentPlayerName { get; set; }
 
         public GameStatus()
         {
