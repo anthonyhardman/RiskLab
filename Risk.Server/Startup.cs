@@ -1,3 +1,4 @@
+using MatBlazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -58,6 +59,7 @@ namespace Risk.Server
             {
 
             }
+            services.AddMatBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,15 +77,15 @@ namespace Risk.Server
                         .AllowAnyHeader();
             });
 
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
+                endpoints.MapFallbackToPage("/_Host");
                 endpoints.MapHub<RiskHub>("/riskhub");
             });
-
-            app.UseStaticFiles();
         }
     }
 }
