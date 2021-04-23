@@ -32,6 +32,11 @@ namespace Risk.Akka.Actors
                     Sender.Tell(new TooManyInvalidRequestsMessage(Context.Self));
                 }
             });
+
+            Receive<ResetInvalidRequestMessage>(msg =>
+            {
+                invalidRequests = 0;
+            });
         }
     }
 }

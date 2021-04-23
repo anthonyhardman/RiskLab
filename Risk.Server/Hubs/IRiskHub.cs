@@ -19,5 +19,6 @@ namespace Risk.Server.Hubs
         Task JoinConfirmation(string name);
         Task DeployConfirmation();
         Task AnnounceStartGame();
+        Task RestartGame(string password, GameStartOptions startOptions);
     }
 }

@@ -119,6 +119,11 @@ namespace Risk.Akka.Actors
             {
                 riskIOBridge.SendChatMessage(players[msg.Player], "To many invalid requests, you've been kicked from the game.");
             });
+
+            Receive<BridgeRestartGameMessage>(msg =>
+            {
+                gameActor.Tell(new RestartGameMessage(msg.Password, msg.StartOptions));
+            });
         }
 
         private string AssignName(string requestedName)

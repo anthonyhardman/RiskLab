@@ -34,6 +34,9 @@ namespace Risk.Akka
     public record GameOverMessage(GameStatus gameStatus);
     public record ChatMessage(IActorRef Player, string MessageText);
     public record TooManyInvalidRequestsMessage(IActorRef Player);
-    public record ReinitializeGameMessage(string SecretCode);
+    public record BridgeRestartGameMessage(string Password, GameStartOptions StartOptions);
+    public record RestartGameMessage(string SecretCode, GameStartOptions StartOptions);
+    public record ResetInvalidRequestMessage();
+
     
 }

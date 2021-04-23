@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using Risk.Akka;
 using Risk.Shared;
 
 namespace Risk.Game
@@ -15,6 +16,7 @@ namespace Risk.Game
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
             gameState = GameState.Initializing;
+            ArmiesDeployedPerTurn = startOptions.ArmiesDeployedPerTurn;
         }
 
         public IActorRef CurrentPlayer { get; set; }
@@ -22,6 +24,7 @@ namespace Risk.Game
         public Dictionary<IActorRef, string> AssignedNames { get; } = new();
 
         private string playerName(IActorRef player) => AssignedNames[player];
+        public int ArmiesDeployedPerTurn { get; private set; }
 
         public int numberOfCardTurnIns = 1;
         
@@ -68,7 +71,8 @@ namespace Risk.Game
             if (gameState != Shared.GameState.Deploying)
                 return false;
 
-            if (GetPlayerRemainingArmies(player) < 1)
+            int remainingArmies = GetPlayerRemainingArmies(player);
+            if (remainingArmies < 1)
                 return false;
             Territory territory;
             try
@@ -80,7 +84,7 @@ namespace Risk.Game
             if (territory.Owner == null)
             {
                 territory.Owner = playerName(player);
-                territory.Armies = 1;
+                territory.Armies = Math.Min(remainingArmies, ArmiesDeployedPerTurn);
                 placeResult = true;
             }
             else if (territory.Owner != playerName(player))
@@ -91,7 +95,7 @@ namespace Risk.Game
             {
                 if (GetPlayerRemainingArmies(player) > 0)
                 {
-                    territory.Armies++;
+                    territory.Armies += Math.Min(remainingArmies, ArmiesDeployedPerTurn);
                     placeResult = true;
                 }
                 else
@@ -170,7 +174,7 @@ namespace Risk.Game
                                   Score = armies + (territoryCount * 2)
                               };
 
-            return new GameStatus(playerNames, GameState, Board.AsBoardTerritoryList(), playerStats);
+            return new GameStatus(playerNames, GameState, Board.AsBoardTerritoryList(), playerStats, AssignedNames[CurrentPlayer]);
         }
 
         public int GetNumPlacedArmies(IActorRef player)
@@ -238,6 +242,17 @@ namespace Risk.Game
             }
             return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1, AttackInvalid = false };
         }
+
+        internal void RestartGame(GameStartOptions startOptions)
+        {
+            foreach(var p in Players)
+            {
+                p.Tell(new ResetInvalidRequestMessage());
+            }
+            InitializeGame(startOptions);
+            StartGame();
+        }
+
         //This adds one Territory card with a Random integer value between 1 and 3. The call is located in the tryAttack win Condition. This also checks that the length of the territory card hand is less than 6.
         public void AddOneTerritoryCard(List<int> territoryCards, Territory defendingTerritory)
         {

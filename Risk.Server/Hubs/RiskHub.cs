@@ -125,5 +125,10 @@ namespace Risk.Server.Hubs
         {
             await BroadCastMessage("Game has started");
         }
+
+        public async Task RestartGame(string password, GameStartOptions startOptions)
+        {
+            IOActor.Tell(new BridgeRestartGameMessage(password, startOptions));
+        }
     }
 }

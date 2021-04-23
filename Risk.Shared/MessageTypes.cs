@@ -8,7 +8,6 @@ namespace Risk.Shared
     {
         public const string ReceiveMessage = "ReceiveMessage";
         public const string SendMessage = "SendMessage";
-
         public const string YourTurnToDeploy = "YourTurnToDeploy";
         public const string GetStatus = "GetStatus";
         public const string SendStatus = "SendStatus";
@@ -19,6 +18,7 @@ namespace Risk.Shared
         public const string YourTurnToAttack = "YourTurnToAttack";
         public const string AttackComplete = "AttackComplete";
         public const string JoinConfirmation = "JoinConfirmation";
+        public const string RestartGame = "RestartGame";
 
     }
 }

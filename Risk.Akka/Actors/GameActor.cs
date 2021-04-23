@@ -29,22 +29,32 @@ namespace Risk.Akka.Actors
                 game.AssignedNames.Add(msg.Actor, msg.AssignedName);
             });
 
-            Receive<StartGameMessage>(msg =>
+            Receive((Action<StartGameMessage>)(msg =>
             {
-                if(secretCode == msg.SecretCode)
-                {
-                    Become(Deploying);
-                    game.InitializeGame(msg.StartOptions);
-                    game.StartGame();
-                    Sender.Tell(new GameStartingMessage());
-                    Sender.Tell(new TellUserDeployMessage(game.CurrentPlayer, game.Board));
-                }
+                StartOrRestartGame(msg.SecretCode, msg.StartOptions, Sender);
+            }));
+
+            Receive<RestartGameMessage>(msg =>
+            {
+                StartOrRestartGame(msg.SecretCode, msg.StartOptions, Sender);
             });
 
             Receive<TooManyInvalidRequestsMessage>(msg => {
                 game.RemovePlayerFromGame(msg.Player);
                 Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });
+        }
+
+        private void StartOrRestartGame(string secretCode, GameStartOptions startOptions, IActorRef Sender)
+        {
+            if (this.secretCode == secretCode)
+            {
+                Become(Deploying);
+                game.InitializeGame(startOptions);
+                game.StartGame();
+                Sender.Tell(new GameStartingMessage());
+                Sender.Tell(new TellUserDeployMessage(game.CurrentPlayer, game.Board));
+            }
         }
 
         public void Deploying()
@@ -181,13 +191,9 @@ namespace Risk.Akka.Actors
 
         public void GameOver()
         {
-            Receive<ReinitializeGameMessage>(msg =>
+            Receive<RestartGameMessage>(msg =>
             {
-                if(msg.SecretCode == secretCode)
-                {
-                    Log.Info("Reinitializing game");
-                    Become(Starting);
-                }
+                Context.Self.Tell(new StartGameMessage(msg.SecretCode, msg.StartOptions), Context.Sender);
             });
         }
 

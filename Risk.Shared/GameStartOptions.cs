@@ -8,5 +8,6 @@ namespace Risk.Shared
         public int Height { get; set; }
         public int Width { get; set; }
         public int StartingArmiesPerPlayer { get; set; }
+        public int ArmiesDeployedPerTurn { get; set; }
     }
 }
