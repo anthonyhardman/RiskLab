@@ -193,7 +193,11 @@ namespace Risk.Akka.Actors
         {
             Receive<RestartGameMessage>(msg =>
             {
-                Context.Self.Tell(new StartGameMessage(msg.SecretCode, msg.StartOptions), Context.Sender);
+                if(msg.SecretCode == secretCode)
+                {
+                    Become(Starting);
+                    Context.Self.Tell(new StartGameMessage(msg.SecretCode, msg.StartOptions), Context.Sender);
+                }
             });
         }
 
