@@ -81,6 +81,10 @@
                     {
                         <td><strong>⭐ @p.Name.Substring(0, Math.Min(20, p.Name.Length)) ⭐</strong></td>
                     }
+                    else if(Status.GameState == GameState.GameOver && playerStats.Where(s=>s.Score == playerStats.Max(s=>s.Score)).Contains(p))
+                    {
+                        <td><strong>🥇 @p.Name.Substring(0, Math.Min(20, p.Name.Length)) 🥇</strong></td>
+                    }
                     else
                     {
                         <td>@p.Name</td>
