@@ -188,7 +188,8 @@ namespace Risk.Akka.Actors
                     }
                     else
                     {
-                        Log.Error("Player tried to attack when they couldn't attack");
+                        Log.Error($"Player {game.AssignedNames[msg.Player]} tried to attack when they couldn't attack");
+                        msg.Player.Tell(new InvalidPlayerRequestMessage());
                         yourTurnToAttack(game.NextPlayer());
                     }
                 }
@@ -200,6 +201,7 @@ namespace Risk.Akka.Actors
             });
 
             Receive<TooManyInvalidRequestsMessage>(msg => {
+                Log.Error($"Player {game.AssignedNames[msg.Player]} has too many invalid requests.  Booting from game.");
                 game.RemovePlayerFromGame(msg.Player);
                 Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });

@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Risk.Shared;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,6 +28,7 @@ namespace Risk.Akka.Actors
             Receive<InvalidPlayerRequestMessage>(msg =>
             {
                 this.invalidRequests += 1;
+                Log.Information($"Player now has {invalidRequests}. :-(");
                 if(invalidRequests > MaxInvalidRequests)
                 {
                     Sender.Tell(new TooManyInvalidRequestsMessage(Context.Self));
