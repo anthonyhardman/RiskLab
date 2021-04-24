@@ -70,6 +70,7 @@ namespace Risk.Akka.Actors
                 
                 if (isCurrentPlayer(msg.Player) && game.TryPlaceArmy(msg.Player, msg.To))
                 {
+                    game.LastAction = new GameAction { Type = ActionType.Deploy, Location = msg.To };
                     Sender.Tell(new ConfirmDeployMessage());
                     Log.Info($"{msg.Player} successfully deployed to {msg.To}");
                     var nextPlayer = game.NextPlayer();
@@ -153,6 +154,7 @@ namespace Risk.Akka.Actors
                             Log.Info($"{game.AssignedNames[msg.Player]} wants to attack from {attackingTerritory} to {defendingTerritory}");
 
                             attackResult = game.TryAttack(msg.Player, attackingTerritory, defendingTerritory);
+                            game.LastAction = new GameAction { Type = ActionType.Attack, Location = msg.Attacking, Destination = msg.Defending };
                             Sender.Tell(new GameStatusMessage(game.GetGameStatus()));
                         }
                         catch (Exception ex)
@@ -161,6 +163,7 @@ namespace Risk.Akka.Actors
                         }
                         if (attackResult.AttackInvalid)
                         {
+                            game.LastAction = null;
                             msg.Player.Tell(new InvalidPlayerRequestMessage());
                             Log.Error($"Invalid attack request! {msg.Player} from {attackingTerritory} to {defendingTerritory}.");
                             Sender.Tell(new ChatMessage(msg.Player, $"Invalid attack request: {attackResult.Message} :("));

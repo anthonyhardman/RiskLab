@@ -9,7 +9,7 @@ param(
 
 if($stopExisting) {
 	write-host "Killing existing dotnet and python* processes..."
-	get-process dotnet | stop-process
+	get-process dotnet* | stop-process
 	get-process python* | stop-process
 }
 

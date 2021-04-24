@@ -86,6 +86,11 @@ namespace Risk.Signalr.ConsoleClient
                 Console.WriteLine($"Successfully joined server. Assigned Name is {validatedName}");
             });
 
+            hubConnection.On<GameStatus>(MessageTypes.SendStatus, (status) =>
+            {
+                Console.WriteLine($"Status: {status}");
+            });
+
             hubConnection.Closed += HubConnection_Closed;
 
             await hubConnection.StartAsync();

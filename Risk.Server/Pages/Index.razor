@@ -81,7 +81,7 @@
                     {
                         <td><strong>⭐ @p.Name.Substring(0, Math.Min(20, p.Name.Length)) ⭐</strong></td>
                     }
-                    else if(Status.GameState == GameState.GameOver && playerStats.Where(s=>s.Score == playerStats.Max(s=>s.Score)).Contains(p))
+                    else if (Status.GameState == GameState.GameOver && playerStats.Where(s => s.Score == playerStats.Max(s => s.Score)).Contains(p))
                     {
                         <td><strong>🥇 @p.Name.Substring(0, Math.Min(20, p.Name.Length)) 🥇</strong></td>
                     }
@@ -96,22 +96,65 @@
             }
         </table>
     </div>
+    <style>
+        .location {
+            font-size: 10pt;
+            display: block;
+        }
 
+        .armies {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .boardCell {
+            width: 60px;
+            height: 60px;
+        }
+
+        .deploySite {
+            border: 4px solid blue;
+        }
+
+        .attackSite {
+            border: 4px solid red;
+        }
+
+        .defendSite {
+            border: 4px dashed crimson;
+        }
+    </style>
     <div class="board-grid-container">
-        <table border="1px" cellpadding="10px">
+        <table border="1px">
             @for (var row = 0; row <= MaxRow; row++)
             {
                 <tr>
                     @for (var col = 0; col <= MaxCol; col++)
                     {
                         var cell = Status.Board.First(t => t.Location == new Location(row, col));
-                        var style = (MarkupString)(string.IsNullOrEmpty(cell.OwnerName)
+                        var style = (string.IsNullOrEmpty(cell.OwnerName)
                                    ? string.Empty
                                    : $"background-color:{ColorGenerator.GetColor(cell.OwnerName)}");
 
-                        <td class="cell" style="@style">
-                            <div class="location">@cell.Location</div>
-                            <div class="armies">@cell.Armies</div>
+                        <td class="cell" style="@(new MarkupString(style))" padding="0px">
+                            @if (Status.GameState != GameState.GameOver)
+                            {
+                                style = Status.LastAction switch
+                                {
+                                    GameAction a when a.Type == ActionType.Deploy && a.Location.Row == row && a.Location.Column == col
+                                        => "deploySite",
+                                    GameAction a when a.Location.Row == row && a.Location.Column == col
+                                        => "attackSite",
+                                    GameAction a when a.Destination != null && a.Destination.Row == row && a.Destination.Column == col
+                                        => "defendSite",
+                                    _ => ""
+                                };
+                            }
+                            <div class="boardCell @style">
+                                <div class="location">@cell.Location</div>
+                                <div class="armies">@cell.Armies</div>
+                            </div>
                         </td>
                     }
                 </tr>

@@ -31,6 +31,7 @@ namespace Risk.Game
         public int StartingArmies { get; private set; }
         public GameState GameState => gameState;
         public const int MaxTimesAPlayerCanNotAttack = 5;
+        public GameAction LastAction { get; set; }
 
         private IEnumerable<Territory> createTerritories(int height, int width)
         {
@@ -166,7 +167,7 @@ namespace Risk.Game
                                   Score = armies + (territoryCount * 2)
                               };
 
-            return new GameStatus(playerNames, GameState, Board.AsBoardTerritoryList(), playerStats, AssignedNames[CurrentPlayer]);
+            return new GameStatus(playerNames, GameState, Board.AsBoardTerritoryList(), playerStats, AssignedNames[CurrentPlayer], LastAction);
         }
 
         public int GetNumPlacedArmies(IActorRef player)

@@ -44,7 +44,7 @@ namespace Risk.Shared
 
         public static bool operator!= (Location l1, Location l2)
         {
-            return l1.Equals(l2) is false;
+            return l1?.Equals(l2) is false;
         }
 
         public override string ToString()
