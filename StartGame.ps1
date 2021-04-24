@@ -1,25 +1,59 @@
-write-host "Starting up risk server" -foregroundcolor green
-$serverport = 5000
+param(
+	[switch]$stopExisting=$false,
+	[int]$numConsoleClients=3,
+	[int]$numPythonClients=3,
+	[int]$num1400Clients=3,
+	[string]$secretCode="banana55",
+	[int]$serverPort=5000
+)
 
+if($stopExisting) {
+	write-host "Killing existing dotnet and python* processes..."
+	get-process dotnet | stop-process
+	get-process python* | stop-process
+}
+
+########################################
+write-host "Compiling risk server..."
+dotnet build Risk.Server
+
+########################################
+write-host "Starting up risk server" -foregroundcolor green
 while((test-netconnection localhost -port $serverport -WarningAction SilentlyContinue).TcpTestSucceeded){
 	write-host "Port $serverport is in use, trying next port"
 	$serverport++
 }
+start-process dotnet -argumentlist "run","--project","./Risk.Server","--StartGameCode", $secretCode, "--urls", "http://localhost:$serverport"
+start-process "http://localhost:$serverport"
 
-start-process ./risk.server.exe -argumentlist "--StartGameCode", "banana55", "--urls", "http://localhost:$serverport"
+if($numConsoleClients -gt 0) {
+	########################################
+	write-host "Compiling console client..."
+	dotnet build risk.signalr.consoleclient
 
-write-host "Starting up risk web-based competitor (it has the start game button)" -foregroundcolor green
-$sampleclientport = 5005
-
-while((test-netconnection localhost -port $sampleclientport -WarningAction SilentlyContinue).TcpTestSucceeded){
-	write-host "Port $sampleclientport is in use, trying next port"
-	$sampleclientport++
+	########################################
+	write-host "Starting C# ConsoleClients:"
+	foreach($i in 1..$numConsoleClients){
+		write-host "Starting up console-based competitor #$i...`n" -foregroundcolor green
+		start-sleep -seconds 1
+		start-process dotnet -argumentlist "run","--project","./Risk.Signalr.ConsoleClient","--serverAddress","http://localhost:$serverport","--playerName","Console $i"
+	}
 }
 
-start-process dotnet -argumentlist "run", "--project",  ".\Runner\Risk.Signalr.SampleClient.csproj", "--playerName", "Sample Opponent", "--ServerAddress", "http://localhost:$serverport", "--urls", "http://localhost:$sampleclientport"
-start-sleep 5
-start-process "http://localhost:$sampleclientport/localhost:$serverport"
-
-write-host "Starting up console-based competitor (you)`n`n`n" -foregroundcolor green
-dotnet run --project ./YourCode "http://localhost:$serverport" 
+if($numPythonClients -gt 0) {
+	########################################
+	write-host "Installing Python Dependencies"
+	python -m pip install -r ./Risk.SignalR.PythonClient/requirements.txt
+	if($LASTEXITCODE -ne 0) {
+		write-warning "Unable to install python dependencies.  Skipping python clients."
+	} else {
+		########################################
+		write-host "Starting Python Clients"
+		foreach($i in 1..$numPythonClients){
+			write-host "Starting up Python competitor #$i...`n" -foregroundcolor green
+			start-sleep -seconds 1
+			start-process python -argumentlist "./Risk.SignalR.PythonClient/SampleRiskClient.py"
+		}
+	}
+}
 

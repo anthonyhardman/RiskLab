@@ -53,7 +53,7 @@ namespace Risk.Akka.Actors
                 game.InitializeGame(startOptions);
                 game.StartGame();
                 Sender.Tell(new GameStartingMessage());
-                Sender.Tell(new TellUserDeployMessage(game.CurrentPlayer, game.Board));
+                yourTurnToDeploy(game.CurrentPlayer);
             }
         }
 
@@ -64,8 +64,10 @@ namespace Risk.Akka.Actors
                 Sender.Tell(new UnableToJoinMessage());
             });
 
-            Receive<DeployMessage>(msg =>
+            Receive((Action<DeployMessage>)(msg =>
             {
+                Log.Info($"{game.AssignedNames[msg.Player]} wants to deploy to {msg.To}");
+                
                 if (isCurrentPlayer(msg.Player) && game.TryPlaceArmy(msg.Player, msg.To))
                 {
                     Sender.Tell(new ConfirmDeployMessage());
@@ -73,12 +75,12 @@ namespace Risk.Akka.Actors
                     var nextPlayer = game.NextPlayer();
                     if(game.GameState == GameState.Deploying)
                     {
-                        Sender.Tell(new TellUserDeployMessage(nextPlayer, game.Board));
+                        yourTurnToDeploy(nextPlayer);
                     }
                     else
                     {
                         Become(Attacking);
-                        Sender.Tell(new TellUserAttackMessage(nextPlayer, game.Board));
+                        yourTurnToAttack(nextPlayer);
                     }
                 }
                 else
@@ -88,12 +90,24 @@ namespace Risk.Akka.Actors
                     Log.Info($"{msg.Player} failed to deploy to {msg.To}");
                 }
                 Sender.Tell(new GameStatusMessage(game.GetGameStatus()));
-            });
+            }));
 
             Receive<TooManyInvalidRequestsMessage>(msg => {
                 game.RemovePlayerFromGame(msg.Player);
                 Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });
+        }
+
+        private void yourTurnToDeploy(IActorRef nextPlayer)
+        {
+            Log.Info($"Asking {game.AssignedNames[nextPlayer]} where they want to deploy");
+            Sender.Tell(new TellUserDeployMessage(nextPlayer, game.Board));
+        }
+
+        private void yourTurnToAttack(IActorRef nextPlayer)
+        {
+            Log.Info($"Asking {game.AssignedNames[nextPlayer]} where they want to attack");
+            Sender.Tell(new TellUserAttackMessage(nextPlayer, game.Board));
         }
 
         public void Attacking()
@@ -102,10 +116,12 @@ namespace Risk.Akka.Actors
             {
                 if (isCurrentPlayer(msg.Player))
                 {
-                    Sender.Tell(new TellUserAttackMessage(game.NextPlayer(), game.Board));
+                    Log.Info($"{game.AssignedNames[msg.Player]} ceases attacking.");
+                    yourTurnToAttack(game.NextPlayer());
                 }
                 else
                 {
+                    Log.Info($"{game.AssignedNames[msg.Player]} wants to cease attacking...but it's not their turn.");
                     msg.Player.Tell(new InvalidPlayerRequestMessage());
                     Sender.Tell(new BadAttackRequest(msg.Player));
                 }
@@ -134,7 +150,7 @@ namespace Risk.Akka.Actors
                             attackingTerritory = game.Board.GetTerritory(msg.Attacking);
                             defendingTerritory = game.Board.GetTerritory(msg.Defending);
 
-                            Log.Info($"{msg.Player} wants to attack from {attackingTerritory} to {defendingTerritory}");
+                            Log.Info($"{game.AssignedNames[msg.Player]} wants to attack from {attackingTerritory} to {defendingTerritory}");
 
                             attackResult = game.TryAttack(msg.Player, attackingTerritory, defendingTerritory);
                             Sender.Tell(new GameStatusMessage(game.GetGameStatus()));
@@ -148,7 +164,7 @@ namespace Risk.Akka.Actors
                             msg.Player.Tell(new InvalidPlayerRequestMessage());
                             Log.Error($"Invalid attack request! {msg.Player} from {attackingTerritory} to {defendingTerritory}.");
                             Sender.Tell(new ChatMessage(msg.Player, $"Invalid attack request: {attackResult.Message} :("));
-                            Sender.Tell(new TellUserAttackMessage(msg.Player, game.Board));
+                            yourTurnToAttack(msg.Player);
                         }
                         else
                         {
@@ -157,10 +173,10 @@ namespace Risk.Akka.Actors
                             {
                                 if (game.PlayerCanAttack(msg.Player))
                                 {
-                                    Sender.Tell(new TellUserAttackMessage(msg.Player, game.Board));
+                                    yourTurnToAttack(msg.Player);
                                 }
                                 else
-                                    Sender.Tell(new TellUserAttackMessage(game.NextPlayer(), game.Board));
+                                    yourTurnToAttack(game.NextPlayer());
                             }
                             else
                             {
@@ -173,7 +189,7 @@ namespace Risk.Akka.Actors
                     else
                     {
                         Log.Error("Player tried to attack when they couldn't attack");
-                        Sender.Tell(new TellUserAttackMessage(game.NextPlayer(), game.Board));
+                        yourTurnToAttack(game.NextPlayer());
                     }
                 }
                 else
