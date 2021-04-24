@@ -10,7 +10,6 @@ namespace Risk.Game
 {
     public class Game
     {
-
         public void InitializeGame(GameStartOptions startOptions)
         {
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
@@ -22,21 +21,15 @@ namespace Risk.Game
         public IActorRef CurrentPlayer { get; set; }
         public List<IActorRef> Players { get; } = new List<IActorRef>();
         public Dictionary<IActorRef, string> AssignedNames { get; } = new();
-
         private string playerName(IActorRef player) => AssignedNames[player];
         public int ArmiesDeployedPerTurn { get; private set; }
-
         public int numberOfCardTurnIns = 1;
-        
-
         public Board Board { get; private set; }
         private GameState gameState { get; set; }
-
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public int StartingArmies { get; private set; }
         public GameState GameState => gameState;
-
         public const int MaxTimesAPlayerCanNotAttack = 5;
 
         private IEnumerable<Territory> createTerritories(int height, int width)
@@ -128,7 +121,6 @@ namespace Risk.Game
             var armiesOnBoard = GetNumPlacedArmies(player);
             return StartingArmies - armiesOnBoard;
         }
-
 
         public bool CanChangeToAttackState()
         {
