@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Shared", "Risk.Shared\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.SampleClient", "Risk.SampleClient\Risk.SampleClient.csproj", "{4A121FD7-0485-4793-A0C7-FC70F1A2BBD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Signalr.SampleClient", "Risk.Signalr.SampleClient\Risk.Signalr.SampleClient.csproj", "{3CF6737E-7F35-403B-80D9-80F36485E63A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Signalr.ConsoleClient", "Risk.Signalr.ConsoleClient\Risk.Signalr.ConsoleClient.csproj", "{BE797A7F-5329-4E26-ADCB-40C2236C5B87}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{338DF0AF-6581-4FD9-A748-274A711917EA}"
@@ -41,10 +39,6 @@ Global
 		{4A121FD7-0485-4793-A0C7-FC70F1A2BBD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A121FD7-0485-4793-A0C7-FC70F1A2BBD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A121FD7-0485-4793-A0C7-FC70F1A2BBD9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3CF6737E-7F35-403B-80D9-80F36485E63A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CF6737E-7F35-403B-80D9-80F36485E63A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3CF6737E-7F35-403B-80D9-80F36485E63A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3CF6737E-7F35-403B-80D9-80F36485E63A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BE797A7F-5329-4E26-ADCB-40C2236C5B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BE797A7F-5329-4E26-ADCB-40C2236C5B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE797A7F-5329-4E26-ADCB-40C2236C5B87}.Release|Any CPU.ActiveCfg = Release|Any CPU

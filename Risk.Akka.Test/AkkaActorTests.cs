@@ -36,9 +36,9 @@ namespace Risk.Akka.Test
         [Test]
         public void TestPlayerUnableToJoinGame()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
             var playerActor = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
-            gameActor.Tell(new StartGameMessage("SecretCode"));
+            gameActor.Tell(new StartGameMessage("SecretCode", startOptions));
             ExpectMsg<GameStartingMessage>();
 
             gameActor.Tell(new JoinGameMessage("Test", playerActor));
@@ -49,7 +49,7 @@ namespace Risk.Akka.Test
         [Test]
         public void TestPlayerGameInteraction()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
             var playerActor = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
 
 
@@ -61,8 +61,8 @@ namespace Risk.Akka.Test
         [Test]
         public void BadPasswordAuthentication()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
-            gameActor.Tell(new StartGameMessage("NotCorrect"));
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
+            gameActor.Tell(new StartGameMessage("NotCorrect", startOptions));
 
             Assert.NotNull(ExpectMsg<CannotStartGameMessage>());
         }
@@ -70,8 +70,8 @@ namespace Risk.Akka.Test
         [Test]
         public void SuccessfulPasswordAuthentication()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
-            gameActor.Tell(new StartGameMessage("SecretCode"));
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
+            gameActor.Tell(new StartGameMessage("SecretCode", startOptions));
 
             Assert.NotNull(ExpectMsg<GameStartingMessage>());
         }
@@ -91,7 +91,7 @@ namespace Risk.Akka.Test
         [Test]
         public void UniquePlayerName()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode", startOptions), TestActor);
+            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
             var playerActor = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
             var playerActor2 = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
 

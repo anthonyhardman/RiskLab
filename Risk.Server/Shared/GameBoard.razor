@@ -1,0 +1,57 @@
+﻿<h3>Game Board</h3>
+
+@code {
+    private int MaxRow = 0;
+    private int MaxCol = 0;
+    private GameStatus status;
+
+    [Parameter]
+    public GameStatus Status
+    {
+        get => status;
+        set
+        {
+            status = value;
+            MaxRow = status.Board.Max(t => t.Location.Row);
+            MaxCol = status.Board.Max(t => t.Location.Column);
+            StateHasChanged();
+        }
+    }
+}
+
+<div class="board-grid-container">
+    <table border="1 px">
+        @for (var row = 0; row <= MaxRow; row++)
+        {
+            <tr>
+                @for (var col = 0; col <= MaxCol; col++)
+                {
+                    var cell = Status.Board.First(t => t.Location == new Location(row, col));
+                    var style = (string.IsNullOrEmpty(cell.OwnerName)
+                               ? string.Empty
+                               : $"background-color:{ColorGenerator.GetColor(cell.OwnerName)}");
+
+                    <td class="cell" style="@(new MarkupString(style))" padding="0px">
+                        @if (Status.GameState != GameState.GameOver)
+                        {
+                            style = Status.LastAction switch
+                            {
+                                GameAction a when a.Type == ActionType.Deploy && a.Location.Row == row && a.Location.Column == col
+                                    => "deploySite",
+                                GameAction a when a.Location.Row == row && a.Location.Column == col
+                                    => "attackSite",
+                                GameAction a when a.Destination != null && a.Destination.Row == row && a.Destination.Column == col
+                                    => "defendSite",
+                                _ => ""
+                            };
+                        }
+                        <div class="boardCell @style">
+                            <div class="location">@cell.Location</div>
+                            <div class="armies">@cell.Armies</div>
+                        </div>
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</div>

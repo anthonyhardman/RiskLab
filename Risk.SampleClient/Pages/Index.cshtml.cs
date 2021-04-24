@@ -41,11 +41,7 @@ namespace Risk.SampleClient.Pages
 
         public async Task<IActionResult> OnPostStartGameAsync()
         {
-            var client = httpClientFactory.CreateClient();
-            //Task.Run(()=>
-            //    client.PostAsJsonAsync($"{configuration["GameServer"]}/startgame", new StartGameRequest { SecretCode = configuration["secretCode"] })
-
-            //);            
+            await Task.CompletedTask;
             return new RedirectToPageResult("Index");
         }
     }

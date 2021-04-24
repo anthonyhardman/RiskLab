@@ -68,16 +68,14 @@ namespace Risk.Server.Hubs
 
         public async Task StartGame(string Password, GameStartOptions startOptions)
         {
-            if(startOptions is null)
-            {
-
-            }
+            await Task.CompletedTask;
             IOActor.Tell(new StartGameMessage(Password, startOptions));
         }
 
 
         public async Task DeployRequest(Location l)
         {
+            await Task.CompletedTask;
             logger.LogInformation("Received DeployRequest from {connectionId}", Context.ConnectionId);
 
             IOActor.Tell(new BridgeDeployMessage(l, Context.ConnectionId));
@@ -128,6 +126,7 @@ namespace Risk.Server.Hubs
 
         public async Task RestartGame(string password, GameStartOptions startOptions)
         {
+            await Task.CompletedTask;
             IOActor.Tell(new BridgeRestartGameMessage(password, startOptions));
         }
     }

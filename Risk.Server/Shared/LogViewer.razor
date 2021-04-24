@@ -1,0 +1,21 @@
+﻿@using MatBlazor
+
+<h3>LogViewer</h3>
+
+@code {
+    [Parameter]
+    public IEnumerable<string> Messages { get; set; }
+    private bool showLog;
+}
+
+<MatSlideToggle @bind-Value="@showLog"></MatSlideToggle><span>Show Log</span>
+@if (showLog)
+{
+    <h5>List of Messages</h5>
+    <ul>
+        @foreach (var message in Messages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+}

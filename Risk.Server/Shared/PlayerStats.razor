@@ -1,0 +1,58 @@
+﻿@using System.Collections.ObjectModel; 
+
+@code {
+    [Parameter]
+    public GameStatus Status { get; set; }
+    private IEnumerable<Risk.Shared.PlayerStats> playerStats;
+    string currentPlayerName;
+    string gameState => Status.GameState switch
+    {
+        GameState.Attacking => "Attack!",
+        GameState.Deploying => "Deployment Commences...",
+        GameState.GameOver => "Game Over!",
+        _ => "Getting Ready..."
+    };
+}
+
+<div class="playerStats">
+    
+    <h3>@gameState</h3>
+    <table>
+        <thead>
+            <tr>
+                <th style="min-width: 200px;">Player</th>
+                <th>Cells</th>
+                <th>Armies</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        @if (Status.GameState == GameState.GameOver)
+        {
+            playerStats = Status.PlayerStats.OrderByDescending(p => p.Score);
+        }
+        else
+        {
+            playerStats = Status.PlayerStats;
+        }
+        @foreach (var p in playerStats)
+        {
+            <tr style="@($" background-color:{ColorGenerator.GetColor(p.Name)}")">
+                @if (currentPlayerName == p.Name && Status.GameState != GameState.GameOver)
+                {
+                    <td><strong>⭐ @p.Name.Substring(0, Math.Min(20, p.Name.Length)) ⭐</strong></td>
+                }
+                else if (Status.GameState == GameState.GameOver && playerStats.Where(s => s.Score == playerStats.Max(s => s.Score)).Contains(p))
+                {
+                    <td><strong>🥇 @p.Name.Substring(0, Math.Min(20, p.Name.Length)) 🥇</strong></td>
+                }
+                else
+                {
+                    <td>@p.Name</td>
+                }
+                <td style="text-align: right">@p.Territories</td>
+                <td style="text-align: right">@p.Armies</td>
+                <td style="text-align: right">@p.Score.ToString("n0")</td>
+            </tr>
+        }
+    </table>
+</div>

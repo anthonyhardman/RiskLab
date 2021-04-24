@@ -55,9 +55,9 @@ namespace Risk.Server
                     Configuration["StartGameCode"],
                     services.GetService<RiskBridge>()
                     ));
-            } catch(Exception e)
+            } catch
             {
-
+                throw;
             }
             services.AddMatBlazor();
         }
