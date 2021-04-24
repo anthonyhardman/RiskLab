@@ -11,6 +11,9 @@ class MyRiskClient(AbstractRiskClient):
 
     def should_attack(self, board: Board) -> bool:
         """returns whether this player should attack given the current board"""
+        if len(self.get_attacks(board)) == 0:
+            return False
+        
         return bool(random.randint(0, 1))
 
     def choose_attack(self, board: Board) -> Tuple[Location, Location]:
