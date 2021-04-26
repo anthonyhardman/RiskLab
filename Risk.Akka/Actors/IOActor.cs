@@ -20,7 +20,7 @@ namespace Risk.Akka.Actors
         {
             this.riskIOBridge = riskIOBridge;
             names = new();
-            gameActor = Context.ActorSelection(ActorNames.Path(ActorNames.Game));
+            gameActor = Context.ActorSelection(ActorNames.Path(Self.Path.Root.ToString(), ActorNames.Game));
             players = new Dictionary<IActorRef, string>();
             Become(Active);
         }

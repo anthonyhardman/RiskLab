@@ -26,7 +26,7 @@ namespace Risk.Server.Hubs
             this.logger = logger;
             this.config = config;
             this.actorSystem = actorSystem;
-            IOActor = actorSystem.ActorSelection(Path(ActorNames.IO));
+            IOActor = actorSystem.ActorSelection(Path("akka://Risk", ActorNames.IO));
         }
         public override async Task OnConnectedAsync()
         {

@@ -9,7 +9,7 @@ namespace Risk.Shared
         public const string Game = "GameActor";
         public const string IO = "IOActor";
 
-        public static string Path(string actorName) => $"akka://Risk/user/{actorName}";
-        public static string Path(string parentName, string actorName) => $"akka://Risk/user/{parentName}/{actorName}";
+        public static string Path(string root, string actorName) => $"{root}/user/{actorName}";
+        public static string Path(string root, string parentName, string actorName) => $"{root}/user/{parentName}/{actorName}";
     }
 }

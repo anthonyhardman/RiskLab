@@ -34,6 +34,11 @@ namespace Risk.Akka.Actors
                 StartOrRestartGame(msg.SecretCode, msg.StartOptions, Sender);
             }));
 
+            Receive<StartGameMessage>(msg =>
+            {
+                StartOrRestartGame(msg.SecretCode, msg.StartOptions, Sender);
+            });
+
             Receive<RestartGameMessage>(msg =>
             {
                 StartOrRestartGame(msg.SecretCode, msg.StartOptions, Sender);
@@ -41,7 +46,7 @@ namespace Risk.Akka.Actors
 
             Receive<TooManyInvalidRequestsMessage>(msg => {
                 game.RemovePlayerFromGame(msg.Player);
-                Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
+                Context.ActorSelection(ActorNames.Path(Self.Path.Root.ToString(), ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });
         }
 
@@ -95,7 +100,7 @@ namespace Risk.Akka.Actors
 
             Receive<TooManyInvalidRequestsMessage>(msg => {
                 game.RemovePlayerFromGame(msg.Player);
-                Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
+                Context.ActorSelection(ActorNames.Path(Self.Path.Root.ToString(), ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });
         }
 
@@ -215,7 +220,7 @@ namespace Risk.Akka.Actors
             Receive<TooManyInvalidRequestsMessage>(msg => {
                 Log.Error($"Player {game.AssignedNames[msg.Player]} has too many invalid requests.  Booting from game.");
                 game.RemovePlayerFromGame(msg.Player);
-                Context.ActorSelection(ActorNames.Path(ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
+                Context.ActorSelection(ActorNames.Path(Self.Path.Root.ToString(), ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
             });
         }
 

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Akka.Actor;
 using Akka.TestKit.NUnit3;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Risk.Akka.Actors;
@@ -91,22 +94,56 @@ namespace Risk.Akka.Test
         [Test]
         public void UniquePlayerName()
         {
-            var gameActor = ActorOfAsTestActorRef(() => new GameActor("SecretCode"), TestActor);
-            var playerActor = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
-            var playerActor2 = ActorOfAsTestActorRef(() => new PlayerActor("Test", "12345"), TestActor);
+            //Arrange
+            var gameActor = Sys.ActorOf(Props.Create(() => new GameActor("banana55")));
 
+            var signups = new List<(string assignedName, string connectionId)>();
+            var mockBridge = new Mock<IRiskIOBridge>();
+            mockBridge.Setup(m => m.JoinConfirmation(It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<string,string>((assignedName, connectionId) =>
+                {
+                    signups.Add((assignedName, connectionId));
+                });
 
-            gameActor.Tell(new JoinGameMessage("Test", playerActor));
-            ExpectMsg<JoinGameResponse>();
-            
-            gameActor.Tell(new JoinGameMessage("Test", playerActor2));
-            Assert.AreEqual("Test2", ExpectMsg<JoinGameResponse>().AssignedName);
+            var ioActor = Sys.ActorOf(Props.Create(() => new IOActor(mockBridge.Object)));
+
+            //Act
+            ioActor.Tell(new SignupMessage("Bogus", "12345"));
+            ioActor.Tell(new SignupMessage("Bogus", "54321"));
+
+            AwaitAssert(() =>
+            {
+                signups.Count.Should().Be(2);
+                signups.First().assignedName.Should().Be("Bogus");
+                signups.Skip(1).First().assignedName.Should().Be("Bogus2");
+            });
         }
 
         [Test]
-        public void DeployMessageTest()
+        public void StartGame()
         {
+            //arrange
+            var gameActor = Sys.ActorOf(Props.Create(() => new GameActor("banana55")), ActorNames.Game);
+            var mockBridge = new Mock<IRiskIOBridge>();
+            string connectionIdOfFirstPlayer = null;
+            mockBridge.Setup(m => m.AskUserDeploy(It.IsAny<string>(), It.IsAny<Board>()))
+                .Callback<string, Board>((connectionId, board) =>
+                {
+                    connectionIdOfFirstPlayer = connectionId;
+                });
+            var ioActor = Sys.ActorOf(Props.Create(() => new IOActor(mockBridge.Object)), ActorNames.IO);
 
+            ioActor.Tell(new SignupMessage("Bogus", "12345"));
+            ioActor.Tell(new SignupMessage("Bogus", "54321"));
+
+            //act
+            ioActor.Tell(new StartGameMessage("banana55", new GameStartOptions { ArmiesDeployedPerTurn = 5, Height = 5, Width = 5, StartingArmiesPerPlayer = 10 }));
+
+            //Assert
+            AwaitAssert(() =>
+            {
+                connectionIdOfFirstPlayer.Should().BeOneOf("12345", "54321");
+            }, duration: TimeSpan.FromSeconds(1));
         }
 
     }
