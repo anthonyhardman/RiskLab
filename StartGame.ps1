@@ -1,8 +1,8 @@
 param(
 	[switch]$stopExisting=$false,
-	[int]$numConsoleClients=3,
-	[int]$numPythonClients=3,
-	[int]$num1400Clients=3,
+	[int]$numConsoleClients=0,
+	[int]$numPythonClients=0,
+	[int]$num1400Clients=0,
 	[string]$secretCode="banana55",
 	[int]$serverPort=5000
 )
