@@ -57,3 +57,17 @@ if($numPythonClients -gt 0) {
 	}
 }
 
+if($num1400Clients -gt 0) {
+	########################################
+	write-host "Compiling console client..."
+	dotnet build risk.signalr.CS1400Client
+
+	########################################
+	write-host "Starting CS1400 Clients"
+	foreach($i in 1..$num1400Clients){
+		write-host "Starting up CS1400 competitor #$i...`n" -foregroundcolor green
+		start-sleep -seconds 1
+		start-process dotnet -argumentlist "run","--project","./Risk.Signalr.CS1400Client","http://localhost:$serverport","CS1400 $i"
+	}
+}
+

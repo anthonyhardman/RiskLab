@@ -26,11 +26,19 @@ namespace Risk.Signalr.CS1400Client
 
         static async Task Main(string[] args)
         {
-            var playerName = PlayerLogic.WhatIsYourName();
+            string playerName = null;
             var serverAddress = "http://localhost:5000";
-            if(args.Length == 1)
+            if(args.Length > 0)
             {
                 serverAddress = args[0];
+            }
+            if(args.Length > 1)
+            {
+                playerName = args[1];
+            }
+            if(playerName == null)
+            {
+                playerName = PlayerLogic.WhatIsYourName();
             }
             Console.WriteLine($"Talking to the server at {serverAddress}.");
 
