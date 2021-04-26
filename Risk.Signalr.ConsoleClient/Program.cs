@@ -48,6 +48,27 @@ namespace Risk.Signalr.ConsoleClient
                 .WithUrl($"{serverAddress}/riskhub")
                 .Build();
 
+            hubConnection.On<string, string>(MessageTypes.SendMessage, (from, message) => Console.WriteLine("From {0}: {1}", from, message));
+
+            hubConnection.On<string>(MessageTypes.JoinConfirmation, validatedName =>
+            {
+                if (config["useAlternate"] == "true")
+                {
+                    playerLogic = new AlternateSampleLogic(validatedName);
+                }
+                else
+                {
+                    playerLogic = new PlayerLogic(validatedName);
+                }
+                Console.Title = validatedName;
+                Console.WriteLine($"Successfully joined server. Assigned Name is {validatedName}");
+            });
+
+            hubConnection.On<GameStatus>(MessageTypes.SendStatus, (status) =>
+            {
+                Console.WriteLine($"Status: {status}");
+            });
+
             hubConnection.On<IEnumerable<BoardTerritory>>(MessageTypes.YourTurnToDeploy, async (board) =>
             {
                 var deployLocation = playerLogic.WhereDoYouWantToDeploy(board);
@@ -68,27 +89,6 @@ namespace Risk.Signalr.ConsoleClient
                     Console.WriteLine("Yielding turn (nowhere left to attack)");
                     await AttackCompleteAsync();
                 }
-            });
-
-            hubConnection.On<string, string>(MessageTypes.SendMessage, (from, message) => Console.WriteLine("From {0}: {1}", from, message));
-
-            hubConnection.On<string>(MessageTypes.JoinConfirmation, validatedName =>
-            {
-                if (config["useAlternate"] == "true")
-                {
-                    playerLogic = new AlternateSampleLogic(validatedName);
-                }
-                else
-                {
-                    playerLogic = new PlayerLogic(validatedName);
-                }
-                Console.Title = validatedName;
-                Console.WriteLine($"Successfully joined server. Assigned Name is {validatedName}");
-            });
-
-            hubConnection.On<GameStatus>(MessageTypes.SendStatus, (status) =>
-            {
-                Console.WriteLine($"Status: {status}");
             });
 
             hubConnection.Closed += HubConnection_Closed;

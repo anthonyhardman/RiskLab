@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Akka.Event;
 using Risk.Shared;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ namespace Risk.Akka.Actors
 {
     public class IOActor : ReceiveActor
     {
+        public ILoggingAdapter Log { get; } = Context.GetLogger();
         private readonly IRiskIOBridge riskIOBridge;
         Dictionary<IActorRef, string> players;
         private ActorSelection gameActor;
@@ -27,28 +29,26 @@ namespace Risk.Akka.Actors
         {
             Receive<SignupMessage>(msg =>
             {
-
+                Log.Info($"{msg.RequestedName} wants to join the game...");
                 if (players.ContainsValue(msg.ConnectionId))
                 {
+                    Log.Info($"{msg.RequestedName} has already joined using connectionid {msg.ConnectionId}");
                     riskIOBridge.JoinFailed(msg.ConnectionId);
                     return;
                 }
                 var assignedName = AssignName(msg.RequestedName);
                 names.Add(assignedName);
+                Log.Info($"{msg.RequestedName} joined game as {assignedName}");
                 var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedName, msg.ConnectionId)), msg.ConnectionId);
                 gameActor.Tell(new JoinGameMessage(assignedName, newPlayer));
                 players.Add(newPlayer, msg.ConnectionId);
                 riskIOBridge.JoinConfirmation(assignedName, msg.ConnectionId);
             });
 
-            Receive<JoinGameResponse>(msg =>
-            {
-                riskIOBridge.JoinConfirmation(msg.AssignedName, players[Sender]);
-            });
-
             Receive<UnableToJoinMessage>(msg =>
             {
-                riskIOBridge.JoinFailed(players[Sender]);
+                Log.Info($"UnableToJoin: {msg.AssignedName} cannot join the game.");
+                riskIOBridge.JoinFailed(players[msg.Actor]);
                 players.Remove(Sender);
             });
 

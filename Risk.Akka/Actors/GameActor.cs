@@ -59,9 +59,9 @@ namespace Risk.Akka.Actors
 
         public void Deploying()
         {
-            Receive<JoinGameMessage>(_ =>
+            Receive<JoinGameMessage>(msg =>
             {
-                Sender.Tell(new UnableToJoinMessage());
+                Sender.Tell(new UnableToJoinMessage(msg.AssignedName, msg.Actor));
             });
 
             Receive((Action<DeployMessage>)(msg =>
@@ -117,6 +117,15 @@ namespace Risk.Akka.Actors
             {
                 if (isCurrentPlayer(msg.Player))
                 {
+                    if(game.Players.Count <= 1 || game.Players.Any(p => game.PlayerCanAttack(p)) is false)
+                    {
+                        game.SetGameOver();
+                        Log.Info("Ending Game. Player count = " + game.Players.Count + ";");
+                        Sender.Tell(new GameOverMessage(game.GetGameStatus()));
+                        Become(GameOver);
+                        return;
+                    }
+
                     Log.Info($"{game.AssignedNames[msg.Player]} ceases attacking.");
                     yourTurnToAttack(game.NextPlayer());
                 }
