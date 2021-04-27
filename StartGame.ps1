@@ -36,7 +36,7 @@ if($numConsoleClients -gt 0) {
 	foreach($i in 1..$numConsoleClients){
 		write-host "Starting up console-based competitor #$i...`n" -foregroundcolor green
 		start-sleep -seconds 1
-		start-process dotnet -argumentlist "run","--project","./Risk.Signalr.ConsoleClient","--serverAddress","http://localhost:$serverport","--playerName","Console $i"
+		start-process dotnet -argumentlist "run","--project","./Risk.Signalr.ConsoleClient","--serverAddress","http://localhost:$serverport","--playerName","Console $i" -windowStyle Minimized
 	}
 }
 
@@ -52,7 +52,7 @@ if($numPythonClients -gt 0) {
 		foreach($i in 1..$numPythonClients){
 			write-host "Starting up Python competitor #$i...`n" -foregroundcolor green
 			start-sleep -seconds 1
-			start-process python -argumentlist "./Risk.SignalR.PythonClient/SampleRiskClient.py"
+			start-process python -argumentlist "./Risk.SignalR.PythonClient/SampleRiskClient.py" -windowStyle Minimized
 		}
 	}
 }
@@ -67,7 +67,7 @@ if($num1400Clients -gt 0) {
 	foreach($i in 1..$num1400Clients){
 		write-host "Starting up CS1400 competitor #$i...`n" -foregroundcolor green
 		start-sleep -seconds 1
-		start-process dotnet -argumentlist "run","--project","./Risk.Signalr.CS1400Client","http://localhost:$serverport","CS1400 $i"
+		start-process dotnet -argumentlist "run","--project","./Risk.Signalr.CS1400Client","http://localhost:$serverport","CS1400 $i" -windowStyle Minimized
 	}
 }
 
