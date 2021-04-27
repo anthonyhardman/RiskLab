@@ -5,7 +5,7 @@ namespace Risk.Signalr.ConsoleClient
 {
     public interface IPlayerLogic
     {
-        string MyPlayerName { get; set; }
+        string MyPlayerName { get; }
 
         (Location from, Location to) WhereDoYouWantToAttack(IEnumerable<BoardTerritory> board);
         Location WhereDoYouWantToDeploy(IEnumerable<BoardTerritory> board);

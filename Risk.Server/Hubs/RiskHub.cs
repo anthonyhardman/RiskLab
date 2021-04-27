@@ -36,7 +36,7 @@ namespace Risk.Server.Hubs
 
         public async Task SendMessage(string user, string message)
         {
-            await Clients.All.SendMessage(user, message);
+            await Clients.Client(user).SendMessage("Server", message);
         }
 
         public async Task SendStatus(GameStatus status)

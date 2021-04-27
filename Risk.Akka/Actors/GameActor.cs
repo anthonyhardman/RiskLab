@@ -71,6 +71,9 @@ namespace Risk.Akka.Actors
 
             Receive((Action<DeployMessage>)(msg =>
             {
+                if (!game.Players.Contains(msg.Player))
+                    return;//ignore messages from actors not in the game.
+
                 Log.Info($"{game.AssignedNames[msg.Player]} wants to deploy to {msg.To}");
                 
                 if (isCurrentPlayer(msg.Player) && game.TryPlaceArmy(msg.Player, msg.To))
@@ -94,13 +97,16 @@ namespace Risk.Akka.Actors
                     msg.Player.Tell(new InvalidPlayerRequestMessage());
                     Sender.Tell(new BadDeployRequest(msg.Player));
                     Log.Info($"{msg.Player} failed to deploy to {msg.To}");
+                    yourTurnToDeploy(game.NextPlayer());
                 }
                 Sender.Tell(new GameStatusMessage(game.GetGameStatus()));
             }));
 
             Receive<TooManyInvalidRequestsMessage>(msg => {
+                Log.Info($"Removing {msg.Player.Path.Name} from game.  Too many bad requests.");
                 game.RemovePlayerFromGame(msg.Player);
                 Context.ActorSelection(ActorNames.Path(Self.Path.Root.ToString(), ActorNames.IO)).Tell(new TooManyInvalidRequestsMessage(msg.Player));
+                game.NextPlayer();
             });
         }
 
@@ -233,6 +239,12 @@ namespace Risk.Akka.Actors
                     Become(Starting);
                     Context.Self.Tell(new StartGameMessage(msg.SecretCode, msg.StartOptions), Context.Sender);
                 }
+            });
+
+            Receive<JoinGameMessage>(msg =>
+            {
+                game.Players.Add(msg.Actor);
+                game.AssignedNames.Add(msg.Actor, msg.AssignedName);
             });
         }
 

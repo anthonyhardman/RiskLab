@@ -14,7 +14,7 @@ namespace Risk.Akka.Actors
         private readonly IRiskIOBridge riskIOBridge;
         Dictionary<IActorRef, string> players;
         private ActorSelection gameActor;
-        private List<string> names { get; set; }
+        private Dictionary<string, string> names { get; set; }
 
         public IOActor(IRiskIOBridge riskIOBridge)
         {
@@ -37,7 +37,7 @@ namespace Risk.Akka.Actors
                     return;
                 }
                 var assignedName = AssignName(msg.RequestedName);
-                names.Add(assignedName);
+                names.Add(msg.ConnectionId, assignedName);
                 Log.Info($"{msg.RequestedName} joined game as {assignedName}");
                 var newPlayer = Context.ActorOf(Props.Create(() => new PlayerActor(assignedName, msg.ConnectionId)), msg.ConnectionId);
                 gameActor.Tell(new JoinGameMessage(assignedName, newPlayer));
@@ -60,7 +60,7 @@ namespace Risk.Akka.Actors
 
             Receive<BadDeployRequest>(msg =>
             {
-                riskIOBridge.BadDeployRequest(players[msg.Player]);
+                riskIOBridge.BadDeployRequest(players[msg.Player], names[players[msg.Player]]);
             });
 
             Receive<BridgeAttackMessage>(msg =>
@@ -130,7 +130,7 @@ namespace Risk.Akka.Actors
         {
             int sameNames = 2;
             var assignedPlayerName = requestedName;
-            while (names.Contains(assignedPlayerName))
+            while (names.ContainsValue(assignedPlayerName))
             {
                 assignedPlayerName = string.Concat(requestedName, sameNames.ToString());
                 sameNames++;

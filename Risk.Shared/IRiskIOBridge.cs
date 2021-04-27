@@ -12,7 +12,7 @@ namespace Risk.Shared
         Task ConfirmDeploy(string connectionId);
         Task GameStarting();
         Task AskUserDeploy(string connectionId, Board board);
-        Task BadDeployRequest(string connectionId);
+        Task BadDeployRequest(string connectionId, string assignedName);
         Task SendGameStatus(GameStatus status);
         Task AskUserAttack(string connectionId, Board board);
         Task SendChatMessage(string connectionId, string messageText);

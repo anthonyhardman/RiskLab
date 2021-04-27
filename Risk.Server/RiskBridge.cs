@@ -43,10 +43,10 @@ namespace Risk.Server
             await riskHub.AskUserDeploy(connectionId, board);
         }
 
-        public async Task BadDeployRequest(string connectionId)
+        public async Task BadDeployRequest(string connectionId, string assignedName)
         {
-            await riskHub.SendMessage(connectionId, "It's not your turn");
-            logger.LogInformation($"{connectionId} tried to deploy when it wasn't their turn. Increasing invalid request count.");
+            await riskHub.SendMessage(connectionId, $"Hey {assignedName}: It's not your turn!");
+            logger.LogInformation($"{assignedName} tried to deploy when it wasn't their turn. Increasing invalid request count.");
         }
 
         public async Task SendGameStatus(GameStatus status)
