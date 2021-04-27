@@ -28,10 +28,6 @@ namespace Risk.Signalr.ConsoleClient
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //applicationLifetime.ApplicationStarted.Register(OnStarted);
-            //applicationLifetime.ApplicationStopping.Register(OnStopping);
-            //applicationLifetime.ApplicationStopped.Register(OnStopped);
-
             var serverAddress = config["serverAddress"] ?? DefaultServerAddress;
             Console.WriteLine($"Talking to the server at {serverAddress}");
 
@@ -52,7 +48,7 @@ namespace Risk.Signalr.ConsoleClient
             {
                 var deployLocation = WhereDoYouWantToDeploy(board);
                 Console.WriteLine("Deploying to {0}", deployLocation);
-                await DeployAsync(deployLocation);
+                await hubConnection.SendAsync(MessageTypes.DeployRequest, deployLocation);
             });
 
             hubConnection.On<IEnumerable<BoardTerritory>>(MessageTypes.YourTurnToAttack, async (board) =>
@@ -61,12 +57,12 @@ namespace Risk.Signalr.ConsoleClient
                 {
                     (var from, var to) = WhereDoYouWantToAttack(board);
                     Console.WriteLine("Attacking from {0} ({1}) to {2} ({3})", from, board.First(c => c.Location == from).OwnerName, to, board.First(c => c.Location == to).OwnerName);
-                    await AttackAsync(from, to);
+                    await hubConnection.SendAsync(MessageTypes.AttackRequest, from, to);
                 }
                 catch
                 {
                     Console.WriteLine("Yielding turn (nowhere left to attack)");
-                    await AttackCompleteAsync();
+                    await hubConnection.SendAsync(MessageTypes.AttackComplete);
                 }
             });
 
@@ -77,28 +73,15 @@ namespace Risk.Signalr.ConsoleClient
                 return Task.CompletedTask;
             };
 
-            Console.ReadLine();
             await hubConnection.StartAsync();
 
             Console.WriteLine("My connection id is {0}.  Waiting for game to start...", hubConnection.ConnectionId);
-            await SignupAsync(MyPlayerName);
+            await hubConnection.SendAsync(MessageTypes.Signup, MyPlayerName);
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        static async Task SignupAsync(string playerName) => await hubConnection.SendAsync(MessageTypes.Signup, playerName);
-
-        static async Task DeployAsync(Location desiredLocation) => await hubConnection.SendAsync(MessageTypes.DeployRequest, desiredLocation);
-
-        static async Task AttackAsync(Location from, Location to) => await hubConnection.SendAsync(MessageTypes.AttackRequest, from, to);
-
-        static async Task AttackCompleteAsync() => await hubConnection.SendAsync(MessageTypes.AttackComplete);
-
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        
         public abstract (Location from, Location to) WhereDoYouWantToAttack(IEnumerable<BoardTerritory> board);
-
         public abstract Location WhereDoYouWantToDeploy(IEnumerable<BoardTerritory> board);
 
         protected IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> board)
